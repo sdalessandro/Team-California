@@ -1,7 +1,11 @@
 from getpass import getpass
 import re
+from main import additionalOptions
+import sprint1
 
-#good version :)
+#good version :))
+
+
 
 print("Welcome to InCollege!\n")
 
@@ -15,19 +19,33 @@ while member not in ['y', 'Y', 'n', 'N']:
 if(member == 'y' or member == 'Y'):
     print("Great! Log in below using existing account credentials: \n")
     
-    existing_un = input("Username: ")
-
-    with open("uns_and_pws.txt", 'r') as f:
-        content = f.read()
-        if existing_un in content:
-            #print("usernmame exists...")
-            existing_pass = getpass("Password: ")
-            
-    with open("uns_and_pws.txt", 'r') as f:
-        content = f.read()
-        if existing_pass in content:
-            print("you have successfully logged in")
-            
+    while True:
+        existing_un = input("Username: ")
+        with open("uns_and_pws.txt", 'r') as fp:
+            inside_file = fp.read()
+#            if existing_un not in inside:
+#                print("Input does not match an already registered username")
+#                print("please try again")
+#                continue
+            if existing_un in inside_file:
+                #print("usernmame exists...")
+                existing_pass = getpass("Password: ")
+                break 
+            else:
+                print("Input does not match an already registerd username")
+                print("Please try again")
+                continue    
+    
+    while True:
+        existing_pass = getpass("Password: ")
+        with open("uns_and_pws.txt", 'r') as fp:
+            inside_file = fp.read()
+            if existing_pass in inside_file:
+                print("You have successfully logged in")
+                break
+            else:
+                print("Password does not match")
+                continue
 
 else:
     print("\nLets get you signed up!\n")
@@ -41,21 +59,21 @@ else:
               continue
         else:
             #print("Username accepted") last mode here :)
-            with open("uns_and_pws.txt", 'r+') as f:   
-                lines = len(f.readlines())
-                if(lines > 10):
+            with open("uns_and_pws.txt", 'r+') as fp:   
+                rows = len(fp.readlines())
+                if(rows > 10):
                     print("all permitted accounts have been created")
                     print("please come back later")
                     break
                 else:
-                    content = f.read()
-                    if new_un in content:
+                    inside_file = fp.read()
+                    if new_un in inside_file:
                         print("This username is already taken...")
                         taken = True
                         continue
                 if(taken == False):
-                    f.write(new_un)
-                    f.write("\n")
+                    fp.write(new_un)
+                    fp.write("\n")
                     print("Username accepted")
                     break
             
@@ -67,19 +85,19 @@ else:
             print("Password must have minimum of 8 characters, maximum of 12 characters, at least one capital letter, one digit, and one special character")
             continue
         else:
-            with open("uns_and_pws.txt", 'r+') as f:   
-                lines = len(f.readlines())
-                if(lines > 10):
+            with open("uns_and_pws.txt", 'r+') as fp:   
+                rows = len(fp.readlines())
+                if(rows > 10):
                     print("all permitted accounts have been created")
                     print("please come back later")
                     break
                 else:
-                    f.write(new_pass)
-                    f.write("\n")
+                    fp.write(new_pass)
+                    fp.write("\n")
                     print("Password accepted")
                     break
 
-
+additionalOptions()
     
 
 #use f.readlines and save the numbered output to a list ? or directly parse through the file... f.seek(0) start at beg each time (save username then password so as to only need one txt file....)
