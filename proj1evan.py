@@ -1,11 +1,9 @@
 from getpass import getpass
 import re
-from main import additionalOptions
-import sprint1
+#from main import additionalOptions
+from sprint1 import additionalOptions
 
 #good version :))
-
-
 
 print("Welcome to InCollege!\n")
 
@@ -37,11 +35,12 @@ if(member == 'y' or member == 'Y'):
                 continue    
     
     while True:
-        existing_pass = getpass("Password: ")
+        #existing_pass = getpass("Password: ")
         with open("uns_and_pws.txt", 'r') as fp:
             inside_file = fp.read()
             if existing_pass in inside_file:
                 print("You have successfully logged in")
+                additionalOptions()
                 break
             else:
                 print("Password does not match")
@@ -64,7 +63,7 @@ else:
                 if(rows > 10):
                     print("all permitted accounts have been created")
                     print("please come back later")
-                    break
+                    quit()
                 else:
                     inside_file = fp.read()
                     if new_un in inside_file:
@@ -77,7 +76,6 @@ else:
                     print("Username accepted")
                     break
             
-  
     while True:
         new_pass = input("Enter your desired password: ")
         if(re.match ("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$", new_pass) == None):
@@ -95,9 +93,9 @@ else:
                     fp.write(new_pass)
                     fp.write("\n")
                     print("Password accepted")
+                    additionalOptions()
                     break
 
-additionalOptions()
     
 
 #use f.readlines and save the numbered output to a list ? or directly parse through the file... f.seek(0) start at beg each time (save username then password so as to only need one txt file....)

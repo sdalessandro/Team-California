@@ -1,6 +1,6 @@
 # additional options on whether the user is searching for a job, learning a skill, or communicating with others
 
-
+'''
 def upper(str):
     for chr in str:
         if chr.isupper():
@@ -118,3 +118,4 @@ def accountLimit(arr):
 
 #To test code just call additionalOptions() function
 #additionalOptions()
+'''
