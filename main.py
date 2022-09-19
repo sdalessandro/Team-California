@@ -1,121 +1,104 @@
-# additional options on whether the user is searching for a job, learning a skill, or communicating with others
+from getpass import getpass
+import re
+import loginMenu
 
-'''
-def upper(str):
-    for chr in str:
-        if chr.isupper():
-            return True
-    return False
+#good version :))
 
-def lower(st):
-      for ch in st:
-          if ch.islower():
-              return True
-      return False
-def max_check(s):
-         if s >12:
-          return False
-def min_check(st_r):
-         if st_r<8:
-           return False
+print("Welcome to InCollege!\n")
 
+member = ""
+member = input("Are you already a member? (y or n): ")
 
-def additionalOptions():
-    print(
-        "Are you looking to:\n1. Search for a job\n2. Learn a skill\n3. Communicate with others\nPlease select 1, 2, or 3\n"
-    )
-    options = input(
-        "Are you looking to:\n1. Search for a job\n2. Learn a skill\n3. Communicate with others\nPlease select 1, 2, or 3\n"
-    )
-     
-  
-    while int(options) != 1 and int(options) != 2 and int(options) != 3:
-        options = input("Invalid input\nPlease select 1, 2, or 3\n")
+while member not in ['y', 'Y', 'n', 'N']:
+    print("Please input 'y' for (yes) or 'n' for (no)")
+    member = input("Are you an existing member? (y or n): ")
 
-    if int(options) == 1:
-        searchJob()
-      #  return 'searchjob'
-    elif int(options) == 2:
-        learnSkill()
-      # return 'learnskill'
-    elif int(options) == 3:
-        communicateOthers()
-        return "communicateothers"
-  
+if(member == 'y' or member == 'Y'):
+    print("Great! Log in below using existing account credentials: \n")
+    
+    while True:
+        existing_un = input("Username: ")
+        with open("uns_and_pws.txt", 'r') as fp:
+            inside_file = fp.read()
+#            if existing_un not in inside:
+#                print("Input does not match an already registered username")
+#                print("please try again")
+#                continue
+            if existing_un in inside_file:
+                #print("usernmame exists...")
+                existing_pass = getpass("Password: ")
+                break 
+            else:
+                print("Input does not match an already registerd username")
+                print("Please try again")
+                continue    
+    
+    while True:
+        #existing_pass = getpass("Password: ")
+        with open("uns_and_pws.txt", 'r') as fp:
+            inside_file = fp.read()
+            if existing_pass in inside_file:
+                print("You have successfully logged in")
+                additionalOptions()
+                break
+            else:
+                print("Password does not match")
+                continue
 
+else:
+    print("\nLets get you signed up!\n")
+    taken = None
+    while True:
+        taken = False
+        new_un = input("Enter your desired username: ")
+        if(re.match ("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$", new_un) == None):
+              print("Username not accepted")
+              print("Username must have minimum of 8 characters, maximum of 12 characters, at least one capital letter, one digit, and one special character")
+              continue
+        else:
+            #print("Username accepted") last mode here :)
+            with open("uns_and_pws.txt", 'r+') as fp:   
+                rows = len(fp.readlines())
+                if(rows > 10):
+                    print("all permitted accounts have been created")
+                    print("please come back later")
+                    quit()
+                else:
+                    inside_file = fp.read()
+                    if new_un in inside_file:
+                        print("This username is already taken...")
+                        taken = True
+                        continue
+                if(taken == False):
+                    fp.write(new_un)
+                    fp.write("\n")
+                    print("Username accepted")
+                    break
+            
+    while True:
+        new_pass = input("Enter your desired password: ")
+        if(re.match ("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$", new_pass) == None):
+            print("Password not accepted")
+            print("Password must have minimum of 8 characters, maximum of 12 characters, at least one capital letter, one digit, and one special character")
+            continue
+        else:
+            with open("uns_and_pws.txt", 'r+') as fp:   
+                rows = len(fp.readlines())
+                if(rows > 10):
+                    print("all permitted accounts have been created")
+                    print("please come back later")
+                    break
+                else:
+                    fp.write(new_pass)
+                    fp.write("\n")
+                    print("Password accepted")
+                    additionalOptions()
+                    break
 
-def searchJob():
-    print("Search for a new Job")
-    return "search"
+    
 
-def communicateOthers():
-    print("Communicate with others")
-    return "comm"
+#use f.readlines and save the numbered output to a list ? or directly parse through the file... f.seek(0) start at beg each time (save username then password so as to only need one txt file....)
 
-# -------------------------------------------------------------------------------------- #
-# Create list of 5 skills for learning a skill section with an additional "do not select a skill" option
-def learnSkill():
-    print("Learn a new skill")
-    selectSkill = input(
-        "Do you want to learn:\n1. Skill 1\n2. SMuy bienkill 2\n3. Skill 3\n4. Skill 4\n5. Skill 5\n6. Do not select a skill\nPlease select 1, 2, 3, 4, 5, or 6\n"
-    )
-
-    while int(selectSkill) != 1 and int(selectSkill) != 2 and int(
-            selectSkill) != 3 and int(selectSkill) != 4 and int(
-                selectSkill) != 5 and int(selectSkill) != 6:
-        selectSkill = input(
-            "Invalid input\nPlease select 1, 2, 3, 4, 5, or 6\n")
-
-    if int(selectSkill) == 1:
-        skill_1(
-        )  #if anyone knows of a more efficient way to do this please let me know
-    elif int(selectSkill) == 2:
-        skill_2()
-    elif int(selectSkill) == 3:
-        skill_3()
-    elif int(selectSkill) == 4:
-        skill_4()
-    elif int(selectSkill) == 5:
-        skill_5()
-    elif int(selectSkill) == 6:
-        skill_6()
-        return "You have successfully learn in"
-
-def skill_1():
-    print("Selected skill 1")
-    return "skill_1"
-
-def skill_2():
-    print("Selected skill 2")
-    return "skill_2"
-  
-def skill_3():
-    print("Selected skill 3")
-    return "skill_3"
-
-def skill_4():
-    print("Selected skill 4")
-    return "skill_4"
-
-def skill_5():
-    print("Selected skill 5")
-    return "skill_5"
-
-def skill_6():
-    print("Selected \"do not select skill")
-    return "skill_6"
-
-# ---------------------------------------------------------------- #
-# Creating a 6th account will result in an error
-# Just a prototype, I rely on evan's code for this to work
-def accountLimit(arr):
-    num = len(arr)
-    if num > 5:
-        print("Error, too many accounts")
-    else:
-        print(arr)
-        return "account"
-
-#To test code just call additionalOptions() function
-#additionalOptions()
-'''
+#t. In this epic, support for up to 5 unique student accounts (unique user name and
+#secure password: minimum of 8 characters, maximum of 12 characters, at least one capital letter, one
+#digit, one special character) will be provided
