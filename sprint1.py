@@ -14,10 +14,10 @@ def additionalOptions():
         communicateOthers()
     
 def searchJob():
-    print("Search for a new Job")
+    print("Under construction...")
     
 def communicateOthers():
-    print("Communicate with others")
+    print("Under construction...")
 
 # -------------------------------------------------------------------------------------- #
 # Create list of 5 skills for learning a skill section with an additional "do not select a skill" option 
@@ -42,32 +42,25 @@ def learnSkill():
         skill_6()  
 
 def skill_1():
-    print("Selected skill 1")
+    print("Under construction...")
     
 def skill_2():
-    print("Selected skill 2")
+    print("Under construction...")
     
 def skill_3():
-    print("Selected skill 3")
+    print("Under construction...")
     
 def skill_4():
-    print("Selected skill 4")
+    print("Under construction...")
     
 def skill_5():
-    print("Selected skill 5")
+    print("Under construction...")
     
 def skill_6():
-    print("Selected \"do not select skill")
+    additionalOptions()
     
 # ---------------------------------------------------------------- #
-# Creating a 6th account will result in an error 
-# Just a prototype, I rely on evan's code for this to work
-def accountLimit(arr):
-    num = len(arr)
-    if num > 5:
-        print("Error, too many accounts")
-    else:
-        print(arr)
+
 
 #To test code just call additionalOptions() function
 #additionalOptions() 
