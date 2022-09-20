@@ -14,10 +14,30 @@ def additionalOptions():
         communicateOthers()
     
 def searchJob():
-    print("Under construction...")
-    
+#    print("Under construction...")
+    choice = input("Would you like to post a job (y or n)? ")
+    if choice == "y":
+        title = input("Enter a title for the job: ")
+        description = input("Enter description: ")
+        employer = input("Enter name of employer: ")
+        location = input("Enter location: ")
+        salary = input("Enter salary: ")
+        # create new text file for job/internship postings (max 5) does not need to be displayed
+
+
 def communicateOthers():
-    print("Under construction...")
+#    print("Under construction...")
+    name = input("Enter the first and last name of the person you want to communicate with: ")
+
+    with open("uns_and_pws.txt",'r') as file:
+        for line in file:
+            if name == line.strip():
+                print("They are a part of the InCollege system!")
+            else:
+                print("They are not yet a part of the InCollege system")
+
+    # if contact is found, give user option to log in or sign up for InCollege    
+
 
 # -------------------------------------------------------------------------------------- #
 # Create list of 5 skills for learning a skill section with an additional "do not select a skill" option 
