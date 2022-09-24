@@ -6,6 +6,9 @@ import loginMenu
 
 print("Welcome to InCollege!\n")
 
+# display success story on main login screen
+loginMenu.successStory()
+
 member = ""
 member = input("Are you already a member? (y or n): ")
 
@@ -39,7 +42,7 @@ if(member == 'y' or member == 'Y'):
             inside_file = fp.read()
             if existing_pass in inside_file:
                 print("You have successfully logged in")
-                additionalOptions()
+                loginMenu.additionalOptions()
                 break
             else:
                 print("Password does not match")
@@ -92,7 +95,7 @@ else:
                     fp.write(new_pass)
                     fp.write("\n")
                     print("Password accepted")
-                    additionalOptions()
+                    loginMenu.additionalOptions()
                     break
 
     

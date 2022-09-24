@@ -16,23 +16,57 @@ def additionalOptions():
 def searchJob():
 #    print("Under construction...")
     choice = input("Would you like to post a job (y or n)? ")
-    if choice == "y":
-        title = input("Enter a title for the job: ")
-        description = input("Enter description: ")
-        employer = input("Enter name of employer: ")
-        location = input("Enter location: ")
-        salary = input("Enter salary: ")
-        # create new text file for job/internship postings (max 5) does not need to be displayed
 
+    while choice != "y" and choice != "n":
+        choice = input("Would you like to post a job (y or n)? ")
+
+    if choice == "y": 
+        file = open("jobListings.txt", mode = 'r')
+        countLines = file.readlines()
+        print(len(countLines))
+        file.close()
+    
+        if len(countLines) <= 30:
+            name = input("Enter your name: ")
+            title = input("Enter a title for the job: ")
+            description = input("Enter description: ")
+            employer = input("Enter name of employer: ")
+            location = input("Enter location: ")
+            salary = input("Enter salary: ")
+
+            file = open("jobListings.txt", mode = 'a')
+            file.write("\n" + name + "\n")
+            file.write(title + "\n")
+            file.write(description + "\n")
+            file.write(employer + "\n")
+            file.write(location + "\n")
+            file.write(salary + "\n")
+            file.close()
+        else: 
+            print("Reached max capacity of five job postings")
 
 def communicateOthers():
 #    print("Under construction...")
     name = input("Enter the first and last name of the person you want to communicate with: ")
 
+    # may need to change file name to new one with names of inCollege registrants
     with open("uns_and_pws.txt",'r') as file:
         for line in file:
             if name == line.strip():
-                print("They are a part of the InCollege system!")
+                print("They are a part of the inCollege system!")
+                option = input("Would you like to create an account to join " + name + "? (y or n): ")
+
+                while option != "y" and option != "n":
+                    option = input("Would you like to create an inCollege account? (y or n): ")
+                
+                print(option)
+
+                """
+                if option == "y":
+                    # go back to create account screen
+                else:
+                    #do nothing
+                """
             else:
                 print("They are not yet a part of the InCollege system")
 
@@ -80,6 +114,13 @@ def skill_6():
     additionalOptions()
     
 # ---------------------------------------------------------------- #
+# function to include success story and why join inCollege to login page
+def successStory():
+    print("\"Joining inCollege has given me the opportunity to find my current career by providing me with connections and skills I needed\" - Jason, graduate")
+    choice = input("Would you like to learn more about how inCollege can help you? (y or n): ")
+
+    if choice == "y":
+        print("Video is now playing")
 
 
 #To test code just call additionalOptions() function
