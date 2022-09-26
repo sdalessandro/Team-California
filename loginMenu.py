@@ -10,12 +10,16 @@ def mainMenu(userList):
     
     if int(options) == 1:
         login(userList)
+        return
     elif int(options) == 2:
         User.createUser(userList)
+        return
     elif int(options) == 3:
         whyJoin()
+        return
     elif int(options) == 4:
         findFriends(userList)
+        return
     else:
         print("Error: Invalid input\n\
             Please select 1, 2, 3, or 4\n")
