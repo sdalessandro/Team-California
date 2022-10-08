@@ -2,11 +2,12 @@ import User, userMenu
 
 def mainMenu(userList):
     
-    options = input("\nSelect an option below:\n\
+    options = input("\nSelect an option:\n\
         1. Login\n\
         2. Sign up\n\
         3. Why join InCollege? (video)\n\
         4. Find a friend\n\
+        5. Useful Links\n\
         5. InCollege Important Links\n")
     
     if int(options) == 1:
@@ -22,11 +23,14 @@ def mainMenu(userList):
         findFriends(userList)
         return
     elif int(options) == 5:
+        usefulLinks(userList)
+        return
+    elif int(options) == 6:
         importantLinks()
         return
     else:
         print("Error: Invalid input\n\
-            Please select 1, 2, 3, or 4\n")
+            Please select a choice 1-6\n")
         mainMenu(userList)
 
 def login(userList):
@@ -68,8 +72,76 @@ def successStory():
     print("\"Joining inCollege has given me the opportunity to find my current career by providing me with connections and skills I needed\" - Jason, graduate")
 
 
+def usefulLinks(userList):
+    
+    options = input("\nSelect an option:\n\
+        1. General\n\
+        2. Browse InCollege\n\
+        3. Business Solutions\n\
+        4. Directories\n\
+        \n\
+        0. Go Back\n")
+
+    if int(options) == 0:
+        mainMenu(userList)
+        return
+    elif int(options) == 1:
+        generalLinks(userList)
+        return
+    elif int(options) == 2:
+        print("Under construction")
+    elif int(options) == 3:
+        print("Under construction")
+    elif int(options) == 4:
+        print("Under construction")
+    else:
+        print("Error: Invalid input\n\
+            Please select a choice 1-4\n")
+
+def generalLinks(userList):
+
+    options = input("\nSelect an option:\n\
+        1. Sign Up\n\
+        2. Help Center\n\
+        3. About\n\
+        4. Press\n\
+        5. Blog\n\
+        6. Careers\n\
+        7. Developers\n\
+        \n\
+        0. Go Back\n")
+
+    if int(options) == 0:
+        usefulLinks()
+        return
+    if int(options) == 1:
+        User.createUser(userList)
+        return
+    elif int(options) == 2:
+        print("We're here to help")
+        return
+    elif int(options) == 3:
+        print("In College: Welcome to In College, the world's largest college student network with many users in many countries and territories worldwide")
+        return
+    elif int(options) == 4:
+        print("In College Pressroom: Stay on top of the latest news, updates, and reports")
+        return
+    elif int(options) == 5:
+        print("Under construction")
+        return
+    elif int(options) == 6:
+        print("Under construction")
+        return
+    elif int(options) == 7:
+        print("Under construction")
+        return
+    else:
+        print("Error: Invalid input\n\
+	    Please select a choice 1-7\n")
+        generalLinks(userList)
 
 def importantLinks():
+
     choice = input("Select an option:\n\
             1. Copyright Notice\n\
             2. About\n\
