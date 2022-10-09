@@ -17,7 +17,7 @@ def mainMenu(userList):
         User.createUser(userList)
         return
     elif int(options) == 3:
-        whyJoin()
+        whyJoin(userList)
         return
     elif int(options) == 4:
         findFriends(userList)
@@ -47,7 +47,7 @@ def login(userList):
     print("Error: Login unsuccessful. Please try again")
     mainMenu(userList)
 
-def whyJoin():
+def whyJoin(userList):
     choice = input("Would you like to learn more about how inCollege can help you? (y or n): ")
     if choice == "y":
         print("Video is now playing")
