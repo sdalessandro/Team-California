@@ -1,3 +1,4 @@
+import User
 # ---------------------------------------------------------------------------------- #
 # additional options on whether the user is searching for a job, learning a skill, or communicating with others 
 def mainMenu():
@@ -6,7 +7,8 @@ def mainMenu():
         \t1. Job Listings\n\
         \t2. Learn a skill\n\
         \t3. Communicate with others\n\
-        \tPlease select 1, 2, or 3\n")
+        \t4. Important Links\n\
+        \tPlease select 1, 2, 3, or 4\n")
     
     
     if int(options) == 1:
@@ -15,6 +17,8 @@ def mainMenu():
         learnSkill()
     elif int(options) == 3:
         communicateOthers()
+    elif int(options) == 4:
+        importantLinksUser()
     else:
         options = input("Invalid input. Please select 1, 2, or 3\n")
         mainMenu()
@@ -103,6 +107,105 @@ def skill_5():
 def skill_6():
     mainMenu()
     
+def importantLinksUser():
+    choice = input("Select an option:\n\
+            1. Copyright Notice\n\
+            2. About\n\
+            3. Accessibility\n\
+            4. User Agreement\n\
+            5. Privacy Policy\n\
+            6. Cookie Policy\n\
+            7. Copyright Policy\n\
+            8. Brand Policy\n")
+
+
+    # create a file that includes all and read file to user
+
+    with open("importantLinks.txt") as file:
+        data = file.readlines()
+        link_list = [x.strip() for x in data]
+
+        if int(choice) == 1:
+            print(link_list[0] + '\n' + link_list[1])
+        elif int(choice) == 2:
+            print(link_list[3] + '\n' + link_list[4])
+        elif int(choice) == 3:
+            print(link_list[6] + '\n' + link_list[7])
+        elif int(choice) == 4:
+            print(link_list[9] + '\n' + link_list[10])
+        elif int(choice) == 5:
+            print(link_list[12] + '\n' + link_list[13])
+            guestControls()
+        elif int(choice) == 6:
+            print(link_list[15] + '\n' + link_list[16] + '\n' + link_list[17] + '\n' + link_list[18] + '\n' + link_list[19] + '\n' + link_list[20])
+        elif int(choice) == 7:
+            print(link_list[22] + '\n' + link_list[23])
+        elif int(choice) == 8:
+            print(link_list[25] + '\n' + link_list[26] + '\n' + link_list[27] + '\n' + link_list[28]);
+        else:
+            print("Error: Invalid input\n\
+                    Please enter a number 1-8.")
+            importantLinksUser()
+
+def guestControls():
+    option = input("Select an option:\n\
+            1. Guest Controls\n\
+            2. Language\n\
+            \n\
+            0. Go back\n")
+
+    with open("userPreferences.txt", 'a') as file:
+        if int(option) == 0:
+            importantLinksUser()
+        elif int(option) == 1:
+            currentPreferences()
+            method = input("What would you like to turn off:\n\
+                    1. Email\n\
+                    2. SMS\n\
+                    3. Targeted Advertising\n\
+                    \n\
+                    0. Go back\n")
+            if int(method) == 0:
+                guestControls()
+            elif int(method) == 1:
+                print("Email option turned off")
+                file.write("{0} Email: {1} \n".format(User.currentUser, "off"))
+            elif int(method) == 2:
+                print("SMS option turned off")
+                file.write("{0} SMS: {1} \n".format(User.currentUser, "off"))
+            elif int(method) == 3:
+                print("Targeted advertising turned off")
+                file.write("{0} Advertising: {1} \n".format(User.currentUser, "off"))
+            else:
+                print("Enter a valid value between 0-3");
+                guestControls()
+        elif int(option) == 2:
+            currentPreferences()
+            language = input("Which language would you like:\n\
+                    1. English\n\
+                    2. Spanish\n")
+            if int(language) == 1:
+                print("English language saved")
+                file.write("{0} English: {1} \n".format(User.currentUser, "on"))
+            elif int(language) == 2:
+                print("Spanish language saved")
+                file.write("{0} Spanish: {1} \n".format(User.currentUser, "on"))
+            else:
+                print("Enter a valid value between 0-2")
+                guestControls()
+        else:
+            print("Enter a valid value between 0-2")
+            guestControls()
+
+def currentPreferences():
+    i = 0
+    with open("userPreferences.txt", 'r') as file:
+        preferenceList = [tuple(line.split(' ')) for line in file.readlines()]
+        while i < len(preferenceList):
+            if preferenceList[i][0] == User.currentUser:
+                print(preferenceList[i][1] + preferenceList[i][2])
+            i = i + 1
+
 
 
 #To test code just call additionalOptions() function

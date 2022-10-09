@@ -8,7 +8,7 @@ def mainMenu(userList):
         3. Why join InCollege? (video)\n\
         4. Find a friend\n\
         5. Useful Links\n\
-        5. InCollege Important Links\n")
+        6. InCollege Important Links\n")
     
     if int(options) == 1:
         login(userList)
@@ -39,6 +39,7 @@ def login(userList):
 
     for user in userList:
         if user.username == username and user.password == password:
+            User.currentUser = user.username
             print("Login successful!")
             userMenu.mainMenu()
             return
@@ -152,9 +153,6 @@ def importantLinks():
             7. Copyright Policy\n\
             8. Brand Policy\n")
     
-
-    # create a file that includes all and read file to user
-
     with open("importantLinks.txt") as file:
         data = file.readlines()
         link_list = [x.strip() for x in data]
@@ -169,17 +167,6 @@ def importantLinks():
             print(link_list[9] + '\n' + link_list[10])
         elif int(choice) == 5:
             print(link_list[12] + '\n' + link_list[13])
-            new_choice = input("Select an option:\n\
-                    1. Guest Controls\n\
-                    2. Languages\n")
-            if int(new_choice) == 1:
-                # guestControls()
-                return
-            elif int(new_choice) == 2:
-                language = input("Select option for language:\n\
-                        1. English\n\
-                        2. Spanish\n")
-                # save user choice
         elif int(choice) == 6:
             print(link_list[15] + '\n' + link_list[16] + '\n' + link_list[17] + '\n' + link_list[18] + '\n' + link_list[19] + '\n' + link_list[20])
         elif int(choice) == 7:
@@ -191,5 +178,3 @@ def importantLinks():
                     Please enter a number 1-8.")
             importantLinks()
 
-#def guestControls():
-   # create new method in user.py to save language and guest control options?

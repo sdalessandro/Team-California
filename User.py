@@ -1,5 +1,7 @@
 import re
 
+global currentUser
+
 class User(object):
 
     def __init__(self, username, password, firstName, lastName):
