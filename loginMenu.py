@@ -11,23 +11,26 @@ def mainMenu(userList):
         6. InCollege Important Links\n")
     
     if int(options) == 1:
+        #return "Login"
         login(userList)
-        return
+    
     elif int(options) == 2:
+        #return "Sign up"
         User.createUser(userList)
-        return
+        
     elif int(options) == 3:
+        #return "Why join"
         whyJoin(userList)
-        return
+
     elif int(options) == 4:
+        #return "Find a friend"
         findFriends(userList)
-        return
     elif int(options) == 5:
+        #return "Useful links"
         usefulLinks(userList)
-        return
     elif int(options) == 6:
+        #return "Incollege important links"
         importantLinks()
-        return
     else:
         print("Error: Invalid input\n\
             Please select a choice 1-6\n")
@@ -42,7 +45,7 @@ def login(userList):
             User.currentUser = user.username
             print("Login successful!")
             userMenu.mainMenu()
-            return
+            return 
             
     print("Error: Login unsuccessful. Please try again")
     mainMenu(userList)
@@ -52,22 +55,25 @@ def whyJoin(userList):
     if choice == "y":
         print("Video is now playing")
 
+    #return "why Join option success"
     mainMenu(userList)
 
 def findFriends(userList):
     firstName = input("Enter your friend's first name: ")
     lastName = input("Enter your friend's last name: ")
-
+    flag = False
+    #return "find Friends option success"
     for user in userList:
-        print(user.firstName)
-        print(user.lastName)
         if user.firstName == firstName and user.lastName == (lastName + "\n"):
             print("Your friend is part of the InCollege system!")
+            flag = True
             option = input("Would you like to create an account to join " + firstName + "? (y or n): ")
             if option == 'y':
                 User.createUser(userList)
-
-    print("{0} {1} is not a member of InCollege.".format(firstName, lastName))
+    if flag == False:    
+        print("{0} {1} is not a member of InCollege.".format(firstName, lastName))
+    
+    
 
 def successStory():
     print("\"Joining inCollege has given me the opportunity to find my current career by providing me with connections and skills I needed\" - Jason, graduate")
@@ -84,16 +90,21 @@ def usefulLinks(userList):
         0. Go Back\n")
 
     if int(options) == 0:
+        #return "go back"
         mainMenu(userList)
-        return
+
     elif int(options) == 1:
+        #return "General link option success"
         generalLinks(userList)
-        return
+        
     elif int(options) == 2:
+        #return "Browse InCollege option success"
         print("Under construction")
     elif int(options) == 3:
+        #return "under construction"
         print("Under construction")
     elif int(options) == 4:
+        #return "under construction"
         print("Under construction")
     else:
         print("Error: Invalid input\n\
@@ -113,29 +124,37 @@ def generalLinks(userList):
         0. Go Back\n")
 
     if int(options) == 0:
+        #return "go back"
         usefulLinks()
-        return
+        
     if int(options) == 1:
+        #return "sign up"
         User.createUser(userList)
-        return
+        
     elif int(options) == 2:
+        #return "help center"
         print("We're here to help")
-        return
+        
     elif int(options) == 3:
+        #return "about"
         print("In College: Welcome to In College, the world's largest college student network with many users in many countries and territories worldwide")
-        return
+        
     elif int(options) == 4:
+        #return "press"
         print("In College Pressroom: Stay on top of the latest news, updates, and reports")
-        return
+        
     elif int(options) == 5:
+        #return "blog"
         print("Under construction")
-        return
+        
     elif int(options) == 6:
+        #return "careers"
         print("Under construction")
-        return
+        
     elif int(options) == 7:
+        #return "developers"
         print("Under construction")
-        return
+        
     else:
         print("Error: Invalid input\n\
 	    Please select a choice 1-7\n")
@@ -177,4 +196,4 @@ def importantLinks():
             print("Error: Invalid input\n\
                     Please enter a number 1-8.")
             importantLinks()
-
+    
