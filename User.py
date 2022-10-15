@@ -17,22 +17,35 @@ def loadUsers(fileName):
         userList = [User(*(line.split(' '))) for line in file]
     return userList
 
+def loadFriends(fileName):
+    with open(fileName) as file:
+        friendList = [User(*(line.split(' '))) for line in file]
+    return friendList
+
 def createUser(userList):
     username = setUsername(userList)
     password = setPassword()
     firstName = setFirstName()
     lastName = setLastName()
 
+    # Write new user to userList.txt
     file = open("userList.txt", 'a')
-    file.write('{0} {1} {2} {3}\n'.format(username, password, firstName, lastName))
+    file.write("{0} {1} {2} {3}\n".format(username, password, firstName, lastName))
     file.close()
+
+    #Write new user to userFriends.txt
+    file = open("userFriends.txt", 'a')
+    file.write(username + " {}\n")
+    file.close()
+    
 
 def setUsername(userList):
     username = input("Enter your desired username: ")
-    if len(userList) >= 10:
+    if len(userList) > 10:
         print("All permitted accounts have been created. Please come back later.")
         mainMenu()
-    if (re.match("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$", username) == None):
+    if (re.match("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$", 
+            username) == None):
         print("Error: Username not accepted")
         print("Username must have minimum of 8 characters, maximum of 12 characters, \
             at least one capital letter, one digit, and one special character\n")
@@ -76,3 +89,24 @@ def setLastName():
         setLastName()
 
     return lastName
+
+def getFriends(friendList):
+
+        
+    return friendDir
+
+def sendFriendRequest(user, friendList):
+
+    
+
+def addFriend(user, friendList):
+
+    if ():
+        
+    return username
+
+def delFriend(user, friendList):
+
+    if ():
+        
+    return username

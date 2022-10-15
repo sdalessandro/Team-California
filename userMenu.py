@@ -1,27 +1,50 @@
 import User
 # ---------------------------------------------------------------------------------- #
 # additional options on whether the user is searching for a job, learning a skill, or communicating with others 
-def mainMenu():
+
+# Rough start for Geonhee's tasks
+def mainMenu(userList, friendList):
+
+    pendingFriendList = []
     
-    options = input("Are you looking to:\n\
+    for [user][friends] in friendList:
+        for friend in friends:
+            if friend == "pending":
+                pendingFriendList.append(friend)
+
+    if pendingFriendList:
+        options = input("\
         \t1. Job Listings\n\
         \t2. Learn a skill\n\
-        \t3. Communicate with others\n\
-        \t4. Important Links\n\
-        \tPlease select 1, 2, 3, or 4\n")
-    
+        \t3. Student search\n\
+        \t4. Communicate with others\n\
+        \t5. Important Links\n\n\
+        \t You have new pending friend request! Enter f to view them.\n\
+        \tOr please select an option 1-5: \n")
+    else: 
+        options = input("\
+        \t1. Job Listings\n\
+        \t2. Learn a skill\n\
+        \t3. Student search\n\
+        \t4. Communicate with others\n\
+        \t5. Important Links\n\
+        \tPlease select an option 1-5: \n")
     
     if int(options) == 1:
         jobListings()
     elif int(options) == 2:
         learnSkill()
     elif int(options) == 3:
-        communicateOthers()
+        studentSearch(userList)
     elif int(options) == 4:
+        communicateOthers()
+    elif int(options) == 5:
         importantLinksUser()
+    elif int(options) == 'f':
+        respondToFriendRequests()
     else:
-        options = input("Invalid input. Please select 1, 2, or 3\n")
-        mainMenu()
+        options = input("Invalid input. Please select an option 1-5\n")
+        mainMenu(userList)
     
 def jobListings():
 
@@ -63,9 +86,6 @@ def jobListings():
         jobListings()
         return
 
-def communicateOthers():
-    print("Under construction...") 
-
 # -------------------------------------------------------------------------------------- #
 # Create list of 5 skills for learning a skill section with an additional "do not select a skill" option 
 def learnSkill():
@@ -105,7 +125,7 @@ def skill_5():
     print("Under construction...")
     
 def skill_6():
-    mainMenu()
+    mainMenu(userList)
     
 def importantLinksUser():
     choice = input("Select an option:\n\
@@ -146,6 +166,51 @@ def importantLinksUser():
             print("Error: Invalid input\n\
                     Please enter a number 1-8.")
             importantLinksUser()
+
+def studentSearch(userList):
+    resultList = []
+    choice = input("Search for a student by:\n\
+        \t1. Last name\n\
+        \t2. University\n\
+        \t3. Major\n\
+        Enter your choice: ")
+
+    if int(choice) == 1:
+        lastName = input("Enter the last name of the student you are looking for: ")
+        for user in userList:
+            if user[3] == lastName:
+                resultList.append(user)
+
+        if resultList:
+            print("The following users match your search:\n")
+            for user in resultList:
+                print("\t{}\n".format(user[0]))
+                
+            choice = input("Enter the username you want to send a friend request;\n\
+                otherwise, press q to go back to the main menu: ")
+            if choice in resultList:
+                User.sendFriendRequest(choice)
+            elif choice == 'q':
+                mainMenu(userList)
+            else:
+                print("Error: Invalid input\n")
+                studentSearch(userList)
+        else:
+            print("A user with the last name {} was not found.".format(lastName))
+            mainMenu(userList)
+    elif int(choice) == 2:
+        print("Under construction")
+        studentSearch(userList)
+    elif int(choice) == 3:
+        print("Under construction")
+        studentSearch(userList)
+    else:
+        print("Error: Invalid input\n\
+            Please enter a number 1-8.")
+        studentSearch(userList):()
+
+def communicateOthers():
+    print("Under construction...") 
 
 def guestControls():
     option = input("Select an option:\n\
@@ -207,6 +272,6 @@ def currentPreferences():
             i = i + 1
 
 
-
-#To test code just call additionalOptions() function
-#additionalOptions() 
+# Placeholder for Geonhee
+def respondToFriendRequests():
+    
