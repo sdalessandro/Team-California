@@ -2,33 +2,29 @@ import User
 # ---------------------------------------------------------------------------------- #
 # additional options on whether the user is searching for a job, learning a skill, or communicating with others 
 
-# Rough start for Geonhee's tasks
-def mainMenu(userList, friendList):
+def mainMenu(curUser, userList, friendDic):
 
+    baseMenu = "\t1. Job Listings\n\
+        \t2. Learn a skill\n\
+        \t3. Student search\n\
+        \t4. Communicate with others\n\
+        \t5. Important Links\n"
     pendingFriendList = []
     
-    for [user][friends] in friendList:
-        for friend in friends:
-            if friend == "pending":
+    for user, userFriends in friendDic:
+        if curUser.username != user:
+            break
+        for friend, status in userFriends:
+            if status == "pending":
                 pendingFriendList.append(friend)
 
     if pendingFriendList:
-        options = input("\
-        \t1. Job Listings\n\
-        \t2. Learn a skill\n\
-        \t3. Student search\n\
-        \t4. Communicate with others\n\
-        \t5. Important Links\n\n\
-        \t You have new pending friend request! Enter f to view them.\n\
-        \tOr please select an option 1-5: \n")
+        friendOptions = input(baseMenu + 
+            "\tYou have new pending friend request! Enter f to view them.\n\
+            \tEnter 'f' to view them or enter an option 1-5: ")
     else: 
-        options = input("\
-        \t1. Job Listings\n\
-        \t2. Learn a skill\n\
-        \t3. Student search\n\
-        \t4. Communicate with others\n\
-        \t5. Important Links\n\
-        \tPlease select an option 1-5: \n")
+        options = input(baseMenu + 
+        "\tPlease select an option 1-5: ")
     
     if int(options) == 1:
         jobListings()
@@ -40,8 +36,8 @@ def mainMenu(userList, friendList):
         communicateOthers()
     elif int(options) == 5:
         importantLinksUser()
-    elif int(options) == 'f':
-        respondToFriendRequests()
+    elif int(friendOptions) == 'f':
+        respondToFriendRequests(curUser, friendDic)
     else:
         options = input("Invalid input. Please select an option 1-5\n")
         mainMenu(userList)
@@ -273,5 +269,5 @@ def currentPreferences():
 
 
 # Placeholder for Geonhee
-def respondToFriendRequests():
+def respondToFriendRequests(curUser, friendDic):
     

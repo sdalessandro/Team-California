@@ -1,4 +1,5 @@
 import re
+from collections import defaultdict
 
 global currentUser
 
@@ -10,17 +11,23 @@ class User(object):
         self.password = password
         self.firstName = firstName
         self.lastName = lastName
-        self.loggedIn = True
+        self.loggedIn = False
 
 def loadUsers(fileName):
-    with open(fileName) as file:
-        userList = [User(*(line.split(' '))) for line in file]
+    with open(fileName) as userFile:
+        userList = [User(*(line.split(' '))) for line in userFile]
     return userList
 
 def loadFriends(fileName):
-    with open(fileName) as file:
-        friendList = [User(*(line.split(' '))) for line in file]
-    return friendList
+    friendDict= {}
+
+    with open("userFriends.txt", "r") as friendFile:
+        lines = friendFile.read().splitlines()
+        for line in lines:
+            key, value = line.split(' ', 1)
+            friendDict[key] = value
+
+    return friendDict
 
 def createUser(userList):
     username = setUsername(userList)
@@ -90,23 +97,28 @@ def setLastName():
 
     return lastName
 
-def getFriends(friendList):
+def getFriends(self, friendDic):
 
-        
-    return friendDir
+    myFriends = []
+    for friend, status in friendDic:
+        if status = "accepted":
+            myFriends.append(friend)
+    
+    return myFriends
 
 def sendFriendRequest(user, friendList):
-
+    return
     
+# Pass in the user you are asking to be your friend and the friendDic
+def addFriend(user, friendDic):
 
-def addFriend(user, friendList):
-
-    if ():
+    #if ():
         
-    return username
+    return
 
+# Decline pending friend (user) request and update friend Dic
 def delFriend(user, friendList):
 
-    if ():
+    #if ():
         
-    return username
+    return
