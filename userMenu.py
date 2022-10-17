@@ -7,8 +7,10 @@ def mainMenu(curUser, userList, friendDic):
     baseMenu = "\t1. Job Listings\n\
         \t2. Learn a skill\n\
         \t3. Student search\n\
-        \t4. Communicate with others\n\
-        \t5. Important Links\n"
+        \t4. Show my network\n\
+        \t5. Communicate with others\n\
+        \t6. Important Links\n\
+        \t7. Logout\n"
     pendingFriendList = []
     curFriendLog = {}
     
@@ -23,10 +25,10 @@ def mainMenu(curUser, userList, friendDic):
     if pendingFriendList:
         friendOptions = input(baseMenu + 
             "\tYou have new pending friend request! Enter f to view them.\n\
-            \tEnter 'f' to view them or enter an option 1-5: ")
+            \tEnter 'f' to view them or enter an option 1-7: ")
     else: 
         options = input(baseMenu + 
-        "\tPlease select an option 1-5: ")
+        "\tPlease select an option 1-7: ")
     
     if int(options) == 1:
         jobListings()
@@ -35,11 +37,15 @@ def mainMenu(curUser, userList, friendDic):
     elif int(options) == 3:
         studentSearch(userList, friendDic)
     elif int(options) == 4:
-        communicateOthers()
+        showMyNetwork()
     elif int(options) == 5:
+        communicateOthers()
+    elif int(options) == 6:
         importantLinksUser()
+    elif int(options) == 7:
+        logout(friendDic)
     elif int(friendOptions) == 'f':
-        listFriendReqs(curUser, pendingFriendList, friendDic)
+        listFriendReqs(curUser, userList, friendDic, pendingFriendList)
     else:
         options = input("Invalid input. Please select an option 1-5\n")
         mainMenu(userList)
@@ -207,6 +213,30 @@ def studentSearch(userList, friendDic):
             Please enter a number 1-3.")
         studentSearch(userList)
 
+# List your friends and allow removal of friends
+def showMyNetwork(curUser, userList, friendDic):
+    print("My friend list:")
+    for friend in curUser.getFriend(curFriendLog):
+        print("\t{}".format(friend))
+
+    choice = input("Would you like to remove any friends? (y/n): ")
+    if choice == 'y':
+        friendInput = input("Enter the username you would like to unfriend: ")
+        for friend in currFriendLog:
+            if (friendInput == friend):
+                curUser.rmFriend(friendInput, friendDic)
+                print("You have removed {} as a friend.".format(friendInput))
+                break
+        else:
+            print("Error: Invalid input, Aborting...")
+    elif choice == 'n':
+        continue
+    else:
+        print("Error: Invalid input, Aborting...")
+        
+    mainMenu(curUser, userList, friendDic, username)
+    return
+
 def communicateOthers():
     print("Under construction...") 
 
@@ -270,7 +300,7 @@ def currentPreferences():
             i = i + 1
 
 # Prints list of pending friend requests and let's you accept them
-def listFriendReqs(curUser, pendingFriendList, friendDic):
+def listFriendReqs(curUser, userList, friendDic, pendingFriendList):
     print("Pending friend requests:")
     for username in pendingFriendList):
         print("\t{} would like to be your friend!".format(username))
@@ -278,13 +308,14 @@ def listFriendReqs(curUser, pendingFriendList, friendDic):
     choice = input("Enter a username above to respond to the request.\n\
         Otherwise, press q to quit")
     if choice == 'q':
+        mainMenu
         return
     for username in pendingFriendList:
         if choice == username:
-            respondToFriendReq(curUser, username, friendDic)
-            
+            respondToFriendReq(curUser, userList, friendDic, username)
+
 # Accept or decline a friend request
-def respondToFriendReq(curUser, username, friendDic):
+def respondToFriendReq(curUser, userList, friendDic, username):
     choice = input("Do you want to accept the friend request from {}? (y/n)".format(username))
     if choice == 'y':
         curUser.acceptFriendReq(username, friendDic)
@@ -294,4 +325,17 @@ def respondToFriendReq(curUser, username, friendDic):
         print("You have declined the request from {}".format(username))
     else:
         print("Error: Please enter 'y' or 'n'")
-        respondToFriendReq(curUser, username, friendDic)
+        respondToFriendReq(curUser, userList, friendDic, username)
+
+    mainMenu(curUser, userList, friendDic)
+    return
+
+# Logout and save necessary info
+def logout(friendDic):
+
+    friendFile = open("userFriends.txt", "w")
+    friendFile.truncate()
+    for user, userFriends in friendDic:
+        friendFile.write("{0} {1}".format(user, userFriends))
+            
+    friendFile.close()
