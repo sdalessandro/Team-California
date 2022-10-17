@@ -14,18 +14,19 @@ def mainMenu(curUser, userList, friendDic):
     pendingFriendList = []
     curFriendLog = {}
     
-    for user, userFriends in friendDic:
+    for user, userFriends in friendDic.items():
         if curUser.username != user:
             break
         curFriendLog = userFriends
-        for friend, status in userFriends:
-            if status == "pending":
-                pendingFriendList.append(friend)
+        friend, status = userFriends.split(' ')
+        #for friend, status in userFriends:
+        if status == "pending":
+          pendingFriendList.append(friend)                
 
     if pendingFriendList:
-        friendOptions = input(baseMenu + 
+        options = input(baseMenu + 
             "\tYou have new pending friend request! Enter f to view them.\n\
-            \tEnter 'f' to view them or enter an option 1-7: ")
+            \tEnter '0' to view them or enter an option 1-7: ")
     else: 
         options = input(baseMenu + 
         "\tPlease select an option 1-7: ")
@@ -35,20 +36,21 @@ def mainMenu(curUser, userList, friendDic):
     elif int(options) == 2:
         learnSkill()
     elif int(options) == 3:
-        studentSearch(userList, friendDic)
+        studentSearch(curUser, userList, friendDic)
     elif int(options) == 4:
-        showMyNetwork()
+        showMyNetwork(curUser, userList, friendDic, curFriendLog)
     elif int(options) == 5:
         communicateOthers()
     elif int(options) == 6:
         importantLinksUser()
     elif int(options) == 7:
         logout(friendDic)
-    elif int(friendOptions) == 'f':
+    elif int(options) == 0:
         listFriendReqs(curUser, userList, friendDic, pendingFriendList)
     else:
         options = input("Invalid input. Please select an option 1-5\n")
         mainMenu(userList)
+        return "mainmenu"
     
 def jobListings():
 
@@ -88,7 +90,7 @@ def jobListings():
     else:
         options = input("Invalid input. Please select 1 or 2\n")
         jobListings()
-        return
+        return "joblist"
 
 # -------------------------------------------------------------------------------------- #
 # Create list of 5 skills for learning a skill section with an additional "do not select a skill" option 
@@ -115,22 +117,23 @@ def learnSkill():
 
 def skill_1():
     print("Under construction...")
+    return "skill1"
     
 def skill_2():
     print("Under construction...")
-    
+    return "skill2"
 def skill_3():
     print("Under construction...")
-    
+    return "skill3"
 def skill_4():
     print("Under construction...")
-    
+    return "skill4"
 def skill_5():
     print("Under construction...")
-    
+    return "skill5"
 def skill_6():
     mainMenu(userList)
-    
+    return "skill6"
 def importantLinksUser():
     choice = input("Select an option:\n\
             1. Copyright Notice\n\
@@ -170,8 +173,9 @@ def importantLinksUser():
             print("Error: Invalid input\n\
                     Please enter a number 1-8.")
             importantLinksUser()
+            return "import"
 
-def studentSearch(userList, friendDic):
+def studentSearch(curUser, userList, friendDic):
     resultList = []
     choice = input("Search for a student by:\n\
         \t1. Last name\n\
@@ -182,26 +186,30 @@ def studentSearch(userList, friendDic):
     if int(choice) == 1:
         lastName = input("Enter the last name of the student you are looking for: ")
         for user in userList:
-            if user[3] == lastName:
+            if user.lastName.strip() == lastName:
                 resultList.append(user)
 
         if resultList:
             print("The following users match your search:\n")
             for user in resultList:
-                print("\t{}\n".format(user[0]))
+                print("\t{}\n".format(user.username))
                 
             choice = input("Enter the username you want to send a friend request;\n\
                 otherwise, press q to go back to the main menu: ")
-            if choice in resultList:
-                User.sendFriendRequest(choice, friendDic)
-            elif choice == 'q':
-                mainMenu(userList)
-            else:
-                print("Error: Invalid input\n")
-                studentSearch(userList)
+            i = 0
+            if choice == 'q':
+              mainMenu(curUser, userList, friendDic)
+            while i < len(resultList):
+              if choice == resultList[i].username:
+                user.sendFriendRequest(choice, friendDic)
+                print("Friend request sent!")
+                i = i + 1
+#            else:
+#                print("Error: Invalid input\n")
+#                studentSearch(curUser, userList, friendDic)
         else:
             print("A user with the last name {} was not found.".format(lastName))
-            mainMenu(userList)
+            mainMenu(curUser, userList, friendDic)
     elif int(choice) == 2:
         print("Under construction")
         studentSearch(userList)
@@ -212,17 +220,18 @@ def studentSearch(userList, friendDic):
         print("Error: Invalid input\n\
             Please enter a number 1-3.")
         studentSearch(userList)
+        return "studentsearch"
 
 # List your friends and allow removal of friends
-def showMyNetwork(curUser, userList, friendDic):
+def showMyNetwork(curUser, userList, friendDic, curFriendLog):
     print("My friend list:")
-    for friend in curUser.getFriend(curFriendLog):
+    for friend in curUser.getFriends(curFriendLog):
         print("\t{}".format(friend))
 
     choice = input("Would you like to remove any friends? (y/n): ")
     if choice == 'y':
         friendInput = input("Enter the username you would like to unfriend: ")
-        for friend in currFriendLog:
+        for friend in curFriendLog:
             if (friendInput == friend):
                 curUser.rmFriend(friendInput, friendDic)
                 print("You have removed {} as a friend.".format(friendInput))
@@ -230,15 +239,16 @@ def showMyNetwork(curUser, userList, friendDic):
         else:
             print("Error: Invalid input, Aborting...")
     elif choice == 'n':
-        continue
+        print("No friends removed")
     else:
         print("Error: Invalid input, Aborting...")
         
-    mainMenu(curUser, userList, friendDic, username)
-    return
+    mainMenu(curUser, userList, friendDic)
+    return "showmy"
 
 def communicateOthers():
     print("Under construction...") 
+    return "comm"
 
 def guestControls():
     option = input("Select an option:\n\
@@ -289,6 +299,7 @@ def guestControls():
         else:
             print("Enter a valid value between 0-2")
             guestControls()
+            return "guest"
 
 def currentPreferences():
     i = 0
@@ -298,11 +309,11 @@ def currentPreferences():
             if preferenceList[i][0] == User.currentUser:
                 print(preferenceList[i][1] + preferenceList[i][2])
             i = i + 1
-
+    return "current"
 # Prints list of pending friend requests and let's you accept them
 def listFriendReqs(curUser, userList, friendDic, pendingFriendList):
     print("Pending friend requests:")
-    for username in pendingFriendList):
+    for username in pendingFriendList:
         print("\t{} would like to be your friend!".format(username))
     
     choice = input("Enter a username above to respond to the request.\n\
@@ -313,6 +324,7 @@ def listFriendReqs(curUser, userList, friendDic, pendingFriendList):
     for username in pendingFriendList:
         if choice == username:
             respondToFriendReq(curUser, userList, friendDic, username)
+    return "list"
 
 # Accept or decline a friend request
 def respondToFriendReq(curUser, userList, friendDic, username):
@@ -328,14 +340,14 @@ def respondToFriendReq(curUser, userList, friendDic, username):
         respondToFriendReq(curUser, userList, friendDic, username)
 
     mainMenu(curUser, userList, friendDic)
-    return
+    return "listfr"
 
 # Logout and save necessary info
 def logout(friendDic):
 
     friendFile = open("userFriends.txt", "w")
     friendFile.truncate()
-    for user, userFriends in friendDic:
-        friendFile.write("{0} {1}".format(user, userFriends))
-            
+    for user, userFriends in friendDic.items():
+        friendFile.write("{0} {1}".format(user, userFriends))            
     friendFile.close()
+    return "log"
