@@ -10,10 +10,12 @@ def mainMenu(curUser, userList, friendDic):
         \t4. Communicate with others\n\
         \t5. Important Links\n"
     pendingFriendList = []
+    curFriendLog = {}
     
     for user, userFriends in friendDic:
         if curUser.username != user:
             break
+        curFriendLog = userFriends
         for friend, status in userFriends:
             if status == "pending":
                 pendingFriendList.append(friend)
@@ -31,13 +33,13 @@ def mainMenu(curUser, userList, friendDic):
     elif int(options) == 2:
         learnSkill()
     elif int(options) == 3:
-        studentSearch(userList)
+        studentSearch(userList, friendDic)
     elif int(options) == 4:
         communicateOthers()
     elif int(options) == 5:
         importantLinksUser()
     elif int(friendOptions) == 'f':
-        respondToFriendRequests(curUser, friendDic)
+        listFriendReqs(curUser, pendingFriendList, friendDic)
     else:
         options = input("Invalid input. Please select an option 1-5\n")
         mainMenu(userList)
@@ -163,7 +165,7 @@ def importantLinksUser():
                     Please enter a number 1-8.")
             importantLinksUser()
 
-def studentSearch(userList):
+def studentSearch(userList, friendDic):
     resultList = []
     choice = input("Search for a student by:\n\
         \t1. Last name\n\
@@ -185,7 +187,7 @@ def studentSearch(userList):
             choice = input("Enter the username you want to send a friend request;\n\
                 otherwise, press q to go back to the main menu: ")
             if choice in resultList:
-                User.sendFriendRequest(choice)
+                User.sendFriendRequest(choice, friendDic)
             elif choice == 'q':
                 mainMenu(userList)
             else:
@@ -202,8 +204,8 @@ def studentSearch(userList):
         studentSearch(userList)
     else:
         print("Error: Invalid input\n\
-            Please enter a number 1-8.")
-        studentSearch(userList):()
+            Please enter a number 1-3.")
+        studentSearch(userList)
 
 def communicateOthers():
     print("Under construction...") 
@@ -267,7 +269,29 @@ def currentPreferences():
                 print(preferenceList[i][1] + preferenceList[i][2])
             i = i + 1
 
-
-# Placeholder for Geonhee
-def respondToFriendRequests(curUser, friendDic):
+# Prints list of pending friend requests and let's you accept them
+def listFriendReqs(curUser, pendingFriendList, friendDic):
+    print("Pending friend requests:")
+    for username in pendingFriendList):
+        print("\t{} would like to be your friend!".format(username))
     
+    choice = input("Enter a username above to respond to the request.\n\
+        Otherwise, press q to quit")
+    if choice == 'q':
+        return
+    for username in pendingFriendList:
+        if choice == username:
+            respondToFriendReq(curUser, username, friendDic)
+            
+# Accept or decline a friend request
+def respondToFriendReq(curUser, username, friendDic):
+    choice = input("Do you want to accept the friend request from {}? (y/n)".format(username))
+    if choice == 'y':
+        curUser.acceptFriendReq(username, friendDic)
+        print("Request accepted! You are now friends with {}".format(username))
+    elif choice == 'n':
+        curUser.declineFriendReq(username, friendDic)
+        print("You have declined the request from {}".format(username))
+    else:
+        print("Error: Please enter 'y' or 'n'")
+        respondToFriendReq(curUser, username, friendDic)

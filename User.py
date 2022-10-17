@@ -19,15 +19,15 @@ def loadUsers(fileName):
     return userList
 
 def loadFriends(fileName):
-    friendDict= {}
+    friendDic = {}
 
     with open("userFriends.txt", "r") as friendFile:
         lines = friendFile.read().splitlines()
         for line in lines:
             key, value = line.split(' ', 1)
-            friendDict[key] = value
+            friendDic[key] = value
 
-    return friendDict
+    return friendDic
 
 def createUser(userList):
     username = setUsername(userList)
@@ -97,28 +97,53 @@ def setLastName():
 
     return lastName
 
-def getFriends(self, friendDic):
-
+# Takes in the entire friend log and checks which are "accepted"
+def getFriends(self, friendLog):
     myFriends = []
-    for friend, status in friendDic:
-        if status = "accepted":
+    for friend, status in friendLog:
+        if status == "accepted":
             myFriends.append(friend)
     
     return myFriends
-
-def sendFriendRequest(user, friendList):
-    return
     
-# Pass in the user you are asking to be your friend and the friendDic
-def addFriend(user, friendDic):
+# Takes in the username of the person you are wanting to friend and updates friendDic
+def sendFriendRequest(self, username, friendDic):
+    for user, userFriends in friendDic:
+        if self.username == user:
+            userFriends.add(user, "pending")
+        if username == user:
+            userFriends.add(user, "pending")
 
-    #if ():
-        
-    return
+    return friendDic
+    
+# updates friendDic by making yourself and username friends
+def acceptFriendReq(self, username, friendDic):
+    for user, userFriends in friendDic:
+        if self.username == user:
+            userFriends[user] = "accepted"
+        if username == user:
+            userFriends[user] = "accepted"
 
-# Decline pending friend (user) request and update friend Dic
-def delFriend(user, friendList):
+    return friendDic
 
-    #if ():
-        
-    return
+# Decline pending friend (user) request and update friendDic
+def declineFriendReq(self, username, friendDic):
+    for user, userFriends in friendDic:
+        if self.username == user:
+            userFriends[user] = "declined"
+        if username == user:
+            userFriends[self.username] = "declined"
+
+    return friendDic
+
+# Unfriend yourself and the passed username by updating friendDic
+def rmFriend(self, username, friendDic):
+    for user, userFriends = friendDic:
+        if self.username == user:
+            userFriends.pop(username, "Error: {0} not friends with {1}".
+                format(self.username, username))
+        if username == user:
+            userFriends.pop(self.username, "Error: {0} is not friends with {1}".
+                format(username, self.username))
+
+    return friendDic
