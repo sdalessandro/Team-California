@@ -1,4 +1,5 @@
 import re
+from collections import defaultdict
 
 global currentUser
 
@@ -10,12 +11,23 @@ class User(object):
         self.password = password
         self.firstName = firstName
         self.lastName = lastName
-        self.loggedIn = True
+        self.loggedIn = False
 
 def loadUsers(fileName):
-    with open(fileName) as file:
-        userList = [User(*(line.split(' '))) for line in file]
+    with open(fileName) as userFile:
+        userList = [User(*(line.split(' '))) for line in userFile]
     return userList
+
+def loadFriends(fileName):
+    friendDic = {}
+
+    with open("userFriends.txt", "r") as friendFile:
+        lines = friendFile.read().splitlines()
+        for line in lines:
+            key, value = line.split(' ', 1)
+            friendDic[key] = value
+
+    return friendDic
 
 def createUser(userList):
     username = setUsername(userList)
@@ -23,16 +35,24 @@ def createUser(userList):
     firstName = setFirstName()
     lastName = setLastName()
 
+    # Write new user to userList.txt
     file = open("userList.txt", 'a')
-    file.write('{0} {1} {2} {3}\n'.format(username, password, firstName, lastName))
+    file.write("{0} {1} {2} {3}\n".format(username, password, firstName, lastName))
     file.close()
+
+    #Write new user to userFriends.txt
+    file = open("userFriends.txt", 'a')
+    file.write(username + " {}\n")
+    file.close()
+    
 
 def setUsername(userList):
     username = input("Enter your desired username: ")
-    if len(userList) >= 10:
+    if len(userList) > 10:
         print("All permitted accounts have been created. Please come back later.")
         mainMenu()
-    if (re.match("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$", username) == None):
+    if (re.match("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$", 
+            username) == None):
         print("Error: Username not accepted")
         print("Username must have minimum of 8 characters, maximum of 12 characters, \
             at least one capital letter, one digit, and one special character\n")
@@ -76,3 +96,54 @@ def setLastName():
         setLastName()
 
     return lastName
+
+# Takes in the entire friend log and checks which are "accepted"
+def getFriends(self, friendLog):
+    myFriends = []
+    for friend, status in friendLog:
+        if status == "accepted":
+            myFriends.append(friend)
+    
+    return myFriends
+    
+# Takes in the username of the person you are wanting to friend and updates friendDic
+def sendFriendRequest(self, username, friendDic):
+    for user, userFriends in friendDic:
+        if self.username == user:
+            userFriends.add(user, "pending")
+        if username == user:
+            userFriends.add(user, "pending")
+
+    return friendDic
+    
+# updates friendDic by making yourself and username friends
+def acceptFriendReq(self, username, friendDic):
+    for user, userFriends in friendDic:
+        if self.username == user:
+            userFriends[user] = "accepted"
+        if username == user:
+            userFriends[user] = "accepted"
+
+    return friendDic
+
+# Decline pending friend (user) request and update friendDic
+def declineFriendReq(self, username, friendDic):
+    for user, userFriends in friendDic:
+        if self.username == user:
+            userFriends[user] = "declined"
+        if username == user:
+            userFriends[self.username] = "declined"
+
+    return friendDic
+
+# Unfriend yourself and the passed username by updating friendDic
+def rmFriend(self, username, friendDic):
+    for user, userFriends = friendDic:
+        if self.username == user:
+            userFriends.pop(username, "Error: {0} not friends with {1}".
+                format(self.username, username))
+        if username == user:
+            userFriends.pop(self.username, "Error: {0} is not friends with {1}".
+                format(username, self.username))
+
+    return friendDic

@@ -1,6 +1,6 @@
 import User, userMenu
 
-def mainMenu(userList):
+def mainMenu(userList, friendDic):
     
     options = input("\nSelect an option:\n\
         1. Login\n\
@@ -36,15 +36,15 @@ def mainMenu(userList):
             Please select a choice 1-6\n")
         mainMenu(userList)
 
-def login(userList):
+def login(userList, friendDic):
     username = input("Enter your username: ")
     password = input("Enter your password: ")
 
     for user in userList:
         if user.username == username and user.password == password:
-            User.currentUser = user.username
+            user.loggedIn = True
             print("Login successful!")
-            userMenu.mainMenu()
+            userMenu.mainMenu(user, userList, friendDic)
             return 
             
     print("Error: Login unsuccessful. Please try again")
