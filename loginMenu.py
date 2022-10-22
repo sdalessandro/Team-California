@@ -3,12 +3,12 @@ import User, userMenu
 def mainMenu(userList, friendDic):
     
     options = input("\nSelect an option:\n\
-        1. Login\n\
-        2. Sign up\n\
-        3. Why join InCollege? (video)\n\
-        4. Find a friend\n\
-        5. Useful Links\n\
-        6. InCollege Important Links\n")
+    1. Login\n\
+    2. Sign up\n\
+    3. Why join InCollege? (video)\n\
+    4. Find a friend\n\
+    5. Useful Links\n\
+    6. InCollege Important Links\n")
     
     if int(options) == 1:
         #return "Login"
@@ -44,7 +44,6 @@ def login(userList, friendDic):
         if user.username == username and user.password == password:
             user.loggedIn = True
             print("Login successful!")
-            User.currentUser = username
             userMenu.mainMenu(user, userList, friendDic)
             return 
             

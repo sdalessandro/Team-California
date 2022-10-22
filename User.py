@@ -1,4 +1,4 @@
-import re
+import re, ast
 from collections import defaultdict
 
 global currentUser
@@ -16,52 +16,39 @@ class User(object):
     # Takes in the entire friend log and checks which are "accepted"
     def getFriends(self, friendLog):
         myFriends = []
-        for friend, status in friendLog:
+        for friend, status in friendLog.items():
             if status == "accepted":
                 myFriends.append(friend)
         
-        
         return myFriends
-
-    # Takes in the username of the person you are wanting to friend and updates friendDic
-    def sendFriendRequest(self, username, friendDic):
-        friendDic[self.username] = "{0} pending".format(username)
-        for user, userFriends in friendDic.items():
-            if self.username == user:
-            # userFriends is a string
-                userFriends = userFriends + user + "pending" + '\n'
-            if username == user:
-                userFriends = userFriends + user + "pending" + '\n'
-        return friendDic
         
-    # updates friendDic by making yourself and username friends
-    def acceptFriendReq(self, username, friendDic):
+    # Takes in the username to modify friend status, updates friendDic, and saves changes
+    def modFriendReq(self, username, friendDic, status):
         for user, userFriends in friendDic.items():
-            if self.username == user:
-                userFriends[user] = "accepted"
-            if username == user:
-                userFriends[user] = "accepted"
+            tmpDic = ast.literal_eval(userFriends)
+            if user == self.username:
+                tmpDic[username] = status
+            if user == username:
+                tmpDic[self.username] = status
+            friendDic[user] = str(tmpDic)
+    
+        saveFriends(friendDic)
         return friendDic
 
-    # Decline pending friend (user) request and update friendDic
-    def declineFriendReq(self, username, friendDic):
-        for user, userFriends in friendDic.items():
-            if self.username == user:
-                userFriends[user] = "declined"
-            if username == user:
-                userFriends[self.username] = "declined"
-        return friendDic
-
-    # Unfriend yourself and the passed username by updating friendDic
+    # Unfriend yourself and the passed username by updating friendDic and saves the changes
     def rmFriend(self, username, friendDic):
         for user, userFriends in friendDic.items():
+            tmpDic = ast.literal_eval(userFriends)
             if self.username == user:
-                userFriends.pop(username, "Error: {0} not friends with {1}".
-                format(self.username, username))
+                tmpDic.pop(username, "Error: {0} not friends with {1}".
+                    format(self.username, username))
             if username == user:
-                userFriends.pop(self.username, "Error: {0} is not friends with {1}".
-                format(username, self.username))
-        return friendDic 
+                tmpDic.pop(self.username, "Error: {0} is not friends with {1}".
+                    format(username, self.username))
+            friendDic[user] = str(tmpDic)
+    
+        saveFriends(friendDic)
+        return friendDic
 
 def loadUsers(fileName):
     with open(fileName) as userFile:
@@ -79,6 +66,15 @@ def loadFriends(fileName):
 
     return friendDic
 
+def saveFriends(friendDic):
+
+    friendFile = open("userFriends.txt", "w")
+    friendFile.truncate()
+    for user, userFriends in friendDic.items():
+        friendFile.write("{0} {1}\n".format(user, userFriends))
+            
+    friendFile.close()
+
 def createUser(userList):
     username = setUsername(userList)
     password = setPassword()
@@ -95,7 +91,6 @@ def createUser(userList):
     file.write(username + " {}\n")
     file.close()
     
-
 def setUsername(userList):
     username = input("Enter your desired username: ")
     if len(userList) > 10:
