@@ -1,4 +1,4 @@
-import re
+import re, json
 from collections import defaultdict
 
 global currentUser
@@ -20,19 +20,18 @@ class User(object):
             if status == "accepted":
                 myFriends.append(friend)
         
-        
         return myFriends
-
+        
     # Takes in the username of the person you are wanting to friend and updates friendDic
     def sendFriendRequest(self, username, friendDic):
-        friendDic[self.username] = "{0} pending".format(username)
+        #dict = json.loads(friendDic)
         for user, userFriends in friendDic.items():
-            if self.username == user:
-            # userFriends is a string
-                userFriends = userFriends + user + "pending" + '\n'
-            if username == user:
-                userFriends = userFriends + user + "pending" + '\n'
-        return friendDic
+            if user == self.username:
+                friendDic[user] = "pending"
+            if user == username:
+                friendDic[user] = "pending"
+    
+        saveFriends(friendDic)
         
     # updates friendDic by making yourself and username friends
     def acceptFriendReq(self, username, friendDic):
@@ -41,8 +40,9 @@ class User(object):
                 userFriends[user] = "accepted"
             if username == user:
                 userFriends[user] = "accepted"
+    
         return friendDic
-
+    
     # Decline pending friend (user) request and update friendDic
     def declineFriendReq(self, username, friendDic):
         for user, userFriends in friendDic.items():
@@ -50,18 +50,21 @@ class User(object):
                 userFriends[user] = "declined"
             if username == user:
                 userFriends[self.username] = "declined"
+    
         return friendDic
-
+    
     # Unfriend yourself and the passed username by updating friendDic
     def rmFriend(self, username, friendDic):
         for user, userFriends in friendDic.items():
             if self.username == user:
                 userFriends.pop(username, "Error: {0} not friends with {1}".
-                format(self.username, username))
+                    format(self.username, username))
             if username == user:
                 userFriends.pop(self.username, "Error: {0} is not friends with {1}".
-                format(username, self.username))
-        return friendDic 
+                    format(username, self.username))
+    
+        return friendDic
+
 
 def loadUsers(fileName):
     with open(fileName) as userFile:
@@ -79,6 +82,15 @@ def loadFriends(fileName):
 
     return friendDic
 
+def saveFriends(friendDic):
+
+    friendFile = open("userFriends.txt", "w")
+    friendFile.truncate()
+    for user, userFriends in friendDic.items():
+        friendFile.write("{0} {1}\n".format(user, userFriends))
+            
+    friendFile.close()
+
 def createUser(userList):
     username = setUsername(userList)
     password = setPassword()
@@ -95,7 +107,6 @@ def createUser(userList):
     file.write(username + " {}\n")
     file.close()
     
-
 def setUsername(userList):
     username = input("Enter your desired username: ")
     if len(userList) > 10:
