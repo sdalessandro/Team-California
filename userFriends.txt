@@ -1,6 +1,6 @@
-user1 {"user2":"accepted", "user3":"declined", "user4":"pending"}
-user2 {"user1":"accepted"}
-user3 {"user1":"declined"}
-user4 {"user1":"pending"}
+user1 {'user2': 'accepted', 'user3': 'declined', 'user4': 'pending'}
+user2 {'user1': 'accepted'}
+user3 {'user1': 'declined'}
+user4 {'user1': 'pending'}
 Ismarieu1! {}
 sdmetrik {}

@@ -20,7 +20,7 @@ def mainMenu(userList, friendDic):
         
     elif int(options) == 3:
         #return "Why join"
-        whyJoin(userList)
+        whyJoin(userList, friendDic)
 
     elif int(options) == 4:
         #return "Find a friend"
@@ -48,15 +48,15 @@ def login(userList, friendDic):
             return 
             
     print("Error: Login unsuccessful. Please try again")
-    mainMenu(userList)
+    mainMenu(userList, friendDic)
 
-def whyJoin(userList):
+def whyJoin(userList, friendDic):
     choice = input("Would you like to learn more about how inCollege can help you? (y or n): ")
     if choice == "y":
         print("Video is now playing")
 
     #return "why Join option success"
-    mainMenu(userList)
+    mainMenu(userList, friendDic)
 
 def findFriends(userList):
     firstName = input("Enter your friend's first name: ")

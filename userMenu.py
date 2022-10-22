@@ -1,4 +1,4 @@
-import User
+import User, ast
 # ---------------------------------------------------------------------------------- #
 # additional options on whether the user is searching for a job, learning a skill, or communicating with others 
 
@@ -10,43 +10,50 @@ def mainMenu(curUser, userList, friendDic):
     4. Show my network\n\
     5. Communicate with others\n\
     6. Important Links\n\
-    7. Logout\n"
+    7. Create Profile\n\
+    8. View Profile\n\
+    9. Logout\n"
+  
     pendingFriendList = []
-    curFriendLog = {}
-    
     for user, userFriends in friendDic.items():
         if curUser.username != user:
-            break
-        curFriendLog = userFriends
-        for friend, status in userFriends:
+            continue
+
+        curFriendLog = ast.literal_eval(userFriends)
+        
+        for friend, status in curFriendLog.items():
             if status == "pending":
                 pendingFriendList.append(friend)
 
     if pendingFriendList:
-        friendOptions = input(baseMenu + 
-            "\tYou have new pending friend request! Enter f to view them.\n\
-            \tEnter 'f' to view them or enter an option 1-7: ")
+        option = input(baseMenu + 
+            "\nYou have new pending friend request!\n\
+Enter 'f' to view them or enter an option 1-7: ")
     else: 
-        options = input(baseMenu + "Please select an option 1-7: ")
+        option = input(baseMenu + "Please select an option 1-7: ")
     
-    if int(options) == 1:
+    if option == '1':
         jobListings()
-    elif int(options) == 2:
+    elif option == '2':
         learnSkill()
-    elif int(options) == 3:
+    elif option == '3':
         studentSearch(curUser, userList, friendDic)
-    elif int(options) == 4:
+    elif option == '4':
         showMyNetwork(curUser, userList, friendDic, curFriendLog)
-    elif int(options) == 5:
+    elif option == '5':
         communicateOthers()
-    elif int(options) == 6:
+    elif option == '6':
         importantLinksUser()
-    elif int(options) == 7:
-        exit(1)
-    elif int(friendOptions) == 'f':
+    elif option == "7":
+        createProfile(curUser, userList, friendDic)
+    elif option == "8":
+        viewProfile(curUser, userList, friendDic)
+    elif option == '9':
+        exit(0)
+    elif option == 'f':
         listFriendReqs(curUser, userList, friendDic, pendingFriendList)
     else:
-        options = input("Invalid input. Please select an option 1-5\n")
+        print("Invalid input. Please select an option 1-7\n")
         mainMenu(userList)
     
 def jobListings():
@@ -192,7 +199,7 @@ otherwise, press q to go back to the main menu: ")
                 mainMenu(curUser, userList, friendDic)
             for user in resultList:
                 if choice == user.username:
-                    user.sendFriendRequest(choice, friendDic)
+                    curUser.modFriendReq(choice, friendDic, "pending")
                     mainMenu(curUser, userList, friendDic)
                 
             print("Error: Invalid input\n")
@@ -220,7 +227,7 @@ def showMyNetwork(curUser, userList, friendDic, curFriendLog):
     choice = input("Would you like to remove any friends? (y/n): ")
     if choice == 'y':
         friendInput = input("Enter the username you would like to unfriend: ")
-        for friend in currFriendLog:
+        for friend in curFriendLog:
             if (friendInput == friend):
                 curUser.rmFriend(friendInput, friendDic)
                 print("You have removed {} as a friend.".format(friendInput))
@@ -301,10 +308,10 @@ def listFriendReqs(curUser, userList, friendDic, pendingFriendList):
     for username in pendingFriendList:
         print("\t{} would like to be your friend!".format(username))
     
-    choice = input("Enter a username above to respond to the request.\n\
-        Otherwise, press q to quit")
+    choice = input("\nEnter a username above to respond to the request.\n\
+Otherwise, press q to quit: ")
     if choice == 'q':
-        mainMenu
+        mainMenu(curUser, userList, friendDic)
         return
     for username in pendingFriendList:
         if choice == username:
@@ -312,12 +319,12 @@ def listFriendReqs(curUser, userList, friendDic, pendingFriendList):
 
 # Accept or decline a friend request
 def respondToFriendReq(curUser, userList, friendDic, username):
-    choice = input("Do you want to accept the friend request from {}? (y/n)".format(username))
+    choice = input("Do you want to accept the friend request from {}? (y/n): ".format(username))
     if choice == 'y':
-        curUser.acceptFriendReq(username, friendDic)
+        curUser.modFriendReq(username, friendDic, "accepted")
         print("Request accepted! You are now friends with {}".format(username))
     elif choice == 'n':
-        curUser.declineFriendReq(username, friendDic)
+        curUser.modFriendReq(username, friendDic, "declined")
         print("You have declined the request from {}".format(username))
     else:
         print("Error: Please enter 'y' or 'n'")
@@ -325,3 +332,167 @@ def respondToFriendReq(curUser, userList, friendDic, username):
 
     mainMenu(curUser, userList, friendDic)
     return
+
+def createProfile(curUser,userList,friendDic):
+    prefile = open("userProfile.txt", "r")
+    preferenceList = [tuple(line.split('/')) for line in prefile.readlines()]
+
+    num_lines = sum(1 for line in open('userProfile.txt')) #number of lines in file
+    breaker = 0
+    #preferenceList[x][0] will iterate through the users in userProfile.txt
+    #check if user has already created a profile or not
+    for x in range(num_lines):
+      if curUser.username == preferenceList[x][0]:
+        print("Profile has already been created!")
+        decision = input("Edit profile? (y/n) ")
+        while decision != "y" and decision != "n":
+          decision = input("Invalid input. Edit profile? (y/n) ")
+
+        if decision == "y":
+          edit = input("Which part do you want to edit?\n1. Title\n2. Major\n3. University\n4. About\n5. Experience\n")
+          while edit != "1" and edit != "2" and edit != "3" and edit != "4" and edit != "5":
+            edit = input("Invalid input. Please enter 1 - 5: ")
+
+          lineRemove = curUser.username + "/" + preferenceList[x][1] + "/" + preferenceList[x][2] + "/" + preferenceList[x][3] + "/" + preferenceList[x][4]
+          
+          if edit == "1":
+            print(preferenceList[x][1])
+            newTitle = input("New title: ")
+            breaker = 1
+            #finds lineRemove variable in the txt file and deletes it 
+            with open("userProfile.txt", "r+") as f:
+              d = f.readlines()
+              f.seek(0)
+              for i in d:
+                if i != lineRemove:
+                  f.write(i)
+              f.truncate()
+
+            #write a new line into the txt file 
+            file = open("userProfile.txt", 'a')
+            file.write(f"{curUser.username}/{newTitle}/{preferenceList[x][2]}/{preferenceList[x][3]}/{preferenceList[x][4]}\n")
+            file.close()
+            print("Title updated!")
+            mainMenu(curUser, userList, friendDic) #goes back to main menu
+          
+          elif edit == "2":
+            print(preferenceList[x][2])
+            newMajor = input("New major: ")
+            breaker = 1
+            #finds lineRemove variable in the txt file and deletes it 
+            with open("userProfile.txt", "r+") as f:
+              d = f.readlines()
+              f.seek(0)
+              for i in d:
+                if i != lineRemove:
+                  f.write(i)
+              f.truncate()
+
+            #write a new line into the txt file 
+            file = open("userProfile.txt", 'a')
+            file.write(f"{curUser.username}/{preferenceList[x][1]}/{newMajor}/{preferenceList[x][3]}/{preferenceList[x][4]}\n")
+            file.close()
+            print("Major updated!")
+            mainMenu(curUser, userList, friendDic) #goes back to main menu
+
+          elif edit == "3":
+            print(preferenceList[x][3])
+            new = input("New university: ")
+            breaker = 1
+            #finds lineRemove variable in the txt file and deletes it 
+            with open("userProfile.txt", "r+") as f:
+              d = f.readlines()
+              f.seek(0)
+              for i in d:
+                if i != lineRemove:
+                  f.write(i)
+              f.truncate()
+
+            #write a new line into the txt file 
+            file = open("userProfile.txt", 'a')
+            file.write(f"{curUser.username}/{preferenceList[x][1]}/{preferenceList[x][2]}/{new}/{preferenceList[x][4]}\n")
+            file.close()
+            print("University updated!")
+            mainMenu(curUser, userList, friendDic) #goes back to main menu
+        
+          elif edit == "4":
+              print(preferenceList[x][4])
+              new = input("New about: ")
+              breaker = 1
+              #finds lineRemove variable in the txt file and deletes it 
+              with open("userProfile.txt", "r+") as f:
+                d = f.readlines()
+                f.seek(0)
+                for i in d:
+                  if i != lineRemove:
+                    f.write(i)
+                f.truncate()
+  
+              #write a new line into the txt file 
+              file = open("userProfile.txt", 'a')
+              file.write(f"{curUser.username}/{preferenceList[x][1]}/{preferenceList[x][2]}/{preferenceList[x][3]}/{new}\n")
+              file.close()
+              print("About updated!")
+              mainMenu(curUser, userList, friendDic) #goes back to main menu
+    
+        elif decision == "n":
+          breaker = 1
+          mainMenu(curUser, userList, friendDic)
+          
+    if breaker == 0:  
+      title = input("Create profile\nPlease enter the title: ")
+      major = input("Enter your major: ")
+      university = input("Enter your university: ")
+      about = input("Tell us about yourself: ")
+      exp = input("Add experience? (y/n) ")
+    
+      while exp != "y" and exp != "n":
+        exp = input("Invalid input. Add experience? (y/n) ")
+  
+      if exp == "y":
+        #experience()
+        #call geonhee's function
+        print("geonhee's function")
+        # expTitle = input("Experience 1\nTitle: ")
+        # expEmployer = input("Employer: ")
+        # expDateStarted = input("Date started: ")
+        # expDateEnded = input("Date ended: ")
+        # expLocation = input("Location: ")
+        # expDescription = input("Description: ")
+  
+        # fileExp = open("userProfileExperience.txt", 'a')
+        # fileExp.write(f"{curUser.username}/{expTitle}/{expEmployer}/{expDateStarted}/{expDateEnded}/{expLocation}/{expDescription}\n")
+        # fileExp.close()
+  
+      file = open("userProfile.txt", 'a')
+      file.write(f"{curUser.username}/{title}/{major}/{university}/{about}\n")
+      file.close()
+      print("Profile created!\n")
+      mainMenu(curUser, userList, friendDic)
+  
+    #for choice in userList 
+
+def viewProfile(curUser,userList,friendDic):
+    prefile = open("userProfile.txt", "r")
+    preferenceList = [tuple(line.split('/')) for line in prefile.readlines()]
+
+    num_lines = sum(1 for line in open('userProfile.txt')) #number of lines in file
+    foundProfile = False
+    #preferenceList[x][0] will iterate through the users in userProfile.txt
+    #check if user has already created a profile or not
+    for x in range(num_lines):
+      if curUser.username == preferenceList[x][0]:
+        #profile has been found 
+        print(curUser.firstName + " " + curUser.lastName)
+        print("Title: " + preferenceList[x][1])
+        print("Major: " + preferenceList[x][2])
+        print("University: " + preferenceList[x][3])
+        print("Description: " + preferenceList[x][4])
+        foundProfile = True
+        mainMenu(curUser, userList, friendDic)
+    
+    if foundProfile == False:
+      print("Profile not found.")
+      mainMenu(curUser, userList, friendDic)
+        
+
