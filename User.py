@@ -27,7 +27,11 @@ class User(object):
         for user, userFriends in friendDic.items():
             tmpDic = ast.literal_eval(userFriends)
             if user == self.username:
-                tmpDic[username] = status
+                # Only sending pending req to recipient 
+                if status == "pending":
+                    tmpDic[username] = "waiting"
+                else:
+                    tmpDic[username] = status
             if user == username:
                 tmpDic[self.username] = status
             friendDic[user] = str(tmpDic)

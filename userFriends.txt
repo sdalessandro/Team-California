@@ -1,8 +1,3 @@
-user1 {'user2': 'accepted', 'user3': 'declined', 'user4': 'pending'}
-user2 {'user1': 'accepted'}
-user3 {'user1': 'declined'}
-user4 {'user1': 'pending'}
-Ismarieu1! {'Geonheeu1!': 'pending'}
-sdmetrik {'Geonheeu1!': 'accepted'}
-jonny {}
-Geonheeu1! {'sdmetrik': 'accepted', 'Ismarieu1!': 'pending'}
+Ismarieu1! {'Geonheeu1!': 'declined', 'sdmetrik': 'accepted'}
+sdmetrik {'Geonheeu1!': 'accepted', 'Ismarieu1!': 'accepted'}
+Geonheeu1! {'sdmetrik': 'accepted', 'Ismarieu1!': 'declined'}

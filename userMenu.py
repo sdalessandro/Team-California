@@ -5,7 +5,7 @@ import sqlite3
 
 def mainMenu(curUser, userList, friendDic):
 
-    baseMenu = "\t1. Job Listings\n\
+    baseMenu = "    1. Job Listings\n\
     2. Learn a skill\n\
     3. Student search\n\
     4. Show my network\n\
@@ -29,9 +29,9 @@ def mainMenu(curUser, userList, friendDic):
     if pendingFriendList:
         option = input(baseMenu + 
             "\nYou have new pending friend request!\n\
-Enter 'f' to view them or enter an option 1-7: ")
+Enter 'f' to view them or enter an option 1-9: ")
     else: 
-        option = input(baseMenu + "Please select an option 1-7: ")
+        option = input(baseMenu + "Please select an option 1-9: ")
     
     if option == '1':
         jobListings()
@@ -55,7 +55,7 @@ Enter 'f' to view them or enter an option 1-7: ")
     elif option == 'f':
         listFriendReqs(curUser, userList, friendDic, pendingFriendList)
     else:
-        print("Invalid input. Please select an option 1-7\n")
+        print("Invalid input. Please select an option 1-9\n")
         mainMenu(userList)
     
 def jobListings():
@@ -617,5 +617,4 @@ def education(curUser, userList, friendDic):
     mainMenu(curUser, userList, friendDic)
 
   # return "education"
-  
   
