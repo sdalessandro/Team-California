@@ -27,7 +27,7 @@ def mainMenu(userList, friendDic):
         findFriends(userList)
     elif int(options) == 5:
         #return "Useful links"
-        usefulLinks(userList)
+        usefulLinks(userList, friendDic)
     elif int(options) == 6:
         #return "Incollege important links"
         importantLinks()
@@ -79,7 +79,7 @@ def successStory():
     print("\"Joining inCollege has given me the opportunity to find my current career by providing me with connections and skills I needed\" - Jason, graduate")
 
 
-def usefulLinks(userList):
+def usefulLinks(userList, friendDic):
     
     options = input("\nSelect an option:\n\
         1. General\n\
@@ -91,7 +91,7 @@ def usefulLinks(userList):
 
     if int(options) == 0:
         #return "go back"
-        mainMenu(userList)
+        mainMenu(userList, friendDic)
 
     elif int(options) == 1:
         #return "General link option success"

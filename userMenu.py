@@ -1,4 +1,5 @@
 import User, ast
+import sqlite3
 # ---------------------------------------------------------------------------------- #
 # additional options on whether the user is searching for a job, learning a skill, or communicating with others 
 
@@ -47,7 +48,8 @@ Enter 'f' to view them or enter an option 1-7: ")
     elif option == "7":
         createProfile(curUser, userList, friendDic)
     elif option == "8":
-        viewProfile(curUser, userList, friendDic)
+        name = curUser.username
+        viewProfile(curUser, userList, friendDic, name)
     elif option == '9':
         exit(0)
     elif option == 'f':
@@ -217,12 +219,27 @@ otherwise, press q to go back to the main menu: ")
         print("Error: Invalid input\n\
             Please enter a number 1-3.")
         studentSearch(curUser, userList, friendDic)
-
+    # return "studentSearch"
+      
 # List your friends and allow removal of friends
 def showMyNetwork(curUser, userList, friendDic, curFriendLog):
     print("My friend list:")
+
+    prefile = open("userProfile.txt", "r")
+    preferenceList = [tuple(line.split('/')) for line in prefile.readlines()]
+    num_lines = sum(1 for line in open('userProfile.txt'))
+    profileList = []
+    for x in range(num_lines):
+      profileList.append(preferenceList[x][0])
+    
+    x = 0
     for friend in curUser.getFriends(curFriendLog):
+        if friend in profileList:
+          print("\t{} profile".format(friend))
+          x += 1
+          continue
         print("\t{}".format(friend))
+        x += 1
 
     choice = input("Would you like to remove any friends? (y/n): ")
     if choice == 'y':
@@ -236,8 +253,17 @@ def showMyNetwork(curUser, userList, friendDic, curFriendLog):
             print("Error: Invalid input, Aborting...")
     elif choice != 'n':
         print("Error: Invalid input, Aborting...")
-        
+
+    choiceProfile = input("Would you like to see any friend's profile? (y/n) ")
+    while choiceProfile != "y" and choiceProfile != "n":
+      choiceProfile = input("Invalid input. (y/n) ")
+
+    if choiceProfile == "y":
+      name = input("Type of username of the friend whose profile you want to see: ")
+      viewProfile(curUser, userList, friendDic, name)
+  
     mainMenu(curUser, userList, friendDic)
+    # return "showNetwork"
     return
 
 def communicateOthers():
@@ -333,6 +359,7 @@ def respondToFriendReq(curUser, userList, friendDic, username):
     mainMenu(curUser, userList, friendDic)
     return
 
+  
 def createProfile(curUser,userList,friendDic):
     prefile = open("userProfile.txt", "r")
     preferenceList = [tuple(line.split('/')) for line in prefile.readlines()]
@@ -349,8 +376,8 @@ def createProfile(curUser,userList,friendDic):
           decision = input("Invalid input. Edit profile? (y/n) ")
 
         if decision == "y":
-          edit = input("Which part do you want to edit?\n1. Title\n2. Major\n3. University\n4. About\n5. Experience\n")
-          while edit != "1" and edit != "2" and edit != "3" and edit != "4" and edit != "5":
+          edit = input("Which part do you want to edit?\n1. Title\n2. Major\n3. University\n4. About\n5. Experience\n6. Education\n")
+          while edit != "1" and edit != "2" and edit != "3" and edit != "4" and edit != "5" and edit != "6":
             edit = input("Invalid input. Please enter 1 - 5: ")
 
           lineRemove = curUser.username + "/" + preferenceList[x][1] + "/" + preferenceList[x][2] + "/" + preferenceList[x][3] + "/" + preferenceList[x][4]
@@ -434,6 +461,12 @@ def createProfile(curUser,userList,friendDic):
               file.close()
               print("About updated!")
               mainMenu(curUser, userList, friendDic) #goes back to main menu
+          elif edit == "5":
+              experience(curUser, userList, friendDic)
+              breaker = 1
+          elif edit == "6":
+              education(curUser, userList, friendDic)
+              breaker = 1
     
         elif decision == "n":
           breaker = 1
@@ -444,35 +477,31 @@ def createProfile(curUser,userList,friendDic):
       major = input("Enter your major: ")
       university = input("Enter your university: ")
       about = input("Tell us about yourself: ")
+      print("Profile created!\n")
       exp = input("Add experience? (y/n) ")
-    
+      file = open("userProfile.txt", 'a')
+      file.write(f"{curUser.username}/{title}/{major}/{university}/{about}\n")
+      file.close()
+      
+      
       while exp != "y" and exp != "n":
         exp = input("Invalid input. Add experience? (y/n) ")
   
       if exp == "y":
-        #experience()
-        #call geonhee's function
-        print("geonhee's function")
-        # expTitle = input("Experience 1\nTitle: ")
-        # expEmployer = input("Employer: ")
-        # expDateStarted = input("Date started: ")
-        # expDateEnded = input("Date ended: ")
-        # expLocation = input("Location: ")
-        # expDescription = input("Description: ")
+        experience(curUser, userList, friendDic)
   
-        # fileExp = open("userProfileExperience.txt", 'a')
-        # fileExp.write(f"{curUser.username}/{expTitle}/{expEmployer}/{expDateStarted}/{expDateEnded}/{expLocation}/{expDescription}\n")
-        # fileExp.close()
-  
-      file = open("userProfile.txt", 'a')
-      file.write(f"{curUser.username}/{title}/{major}/{university}/{about}\n")
-      file.close()
-      print("Profile created!\n")
-      mainMenu(curUser, userList, friendDic)
+
+
   
     #for choice in userList 
 
-def viewProfile(curUser,userList,friendDic):
+def viewProfile(curUser,userList,friendDic, username):
+    db = sqlite3.connect("profile.db")
+    cur = db.cursor()  
+
+    db2 = sqlite3.connect("education.db")
+    cur2 = db2.cursor()
+    
     prefile = open("userProfile.txt", "r")
     preferenceList = [tuple(line.split('/')) for line in prefile.readlines()]
 
@@ -481,18 +510,112 @@ def viewProfile(curUser,userList,friendDic):
     #preferenceList[x][0] will iterate through the users in userProfile.txt
     #check if user has already created a profile or not
     for x in range(num_lines):
-      if curUser.username == preferenceList[x][0]:
+      if username == preferenceList[x][0]:
         #profile has been found 
-        print(curUser.firstName + " " + curUser.lastName)
+        print(username)
         print("Title: " + preferenceList[x][1])
         print("Major: " + preferenceList[x][2])
         print("University: " + preferenceList[x][3])
         print("Description: " + preferenceList[x][4])
         foundProfile = True
+
+        exp = cur.execute("SELECT * FROM experience WHERE username=?", (username,))
+        expList = exp.fetchall()
+
+        for num, exp in enumerate(expList):
+          print(f"Experience {num + 1}")
+          print("Title: " + exp[1])
+          print("Employer: " + exp[2])
+          print("Date started: " + exp[3])
+          print("Date ended: " + exp[4])
+          print("Location: " + exp[5])
+          print("Description: " + exp[6] + "\n")
+
+        exp2 = cur2.execute("SELECT * FROM education WHERE username=?", (username,))
+        exp2List = exp2.fetchall()
+        if exp2:  
+          for exp in exp2List: 
+            print(exp[1])
+            print(exp[2])
+            print(exp[3])
+            
         mainMenu(curUser, userList, friendDic)
-    
+                 
     if foundProfile == False:
       print("Profile not found.")
       mainMenu(curUser, userList, friendDic)
-        
 
+    #return "createdProfile"
+
+def experience(curUser, userList, friendDic):  
+  db = sqlite3.connect("profile.db")
+  cur = db.cursor()  
+  cur.execute("CREATE TABLE IF NOT EXISTS experience('username' TEXT NOT NULL, 'title' TEXT, 'employer' TEXT, 'dateStarted' TEXT, 'dateEnded' TEXT, 'location' TEXT, 'description' TEXT)")
+  flag = 0 
+  ask = input("Would you like to edit an experience? (y/n) ")
+  while ask != "y" and ask != "n":
+    ask = input("Invalid input. (y/n) ")
+    
+  if ask == "y":
+    expNum = input("Which experience would you like to edit? (Insert title of experience) ")
+    
+    exist2 = cur.execute("SELECT title FROM experience WHERE title=?", (expNum,))
+    exist = exist2.fetchall()
+    
+    if exist:
+      expTitle = input("New Experience 1\nTitle: ")
+      expEmployer = input("New Employer: ")
+      expDateStarted = input("New Date started: ")
+      expDateEnded = input("New Date ended: ")
+      expLocation = input("New Location: ")
+      expDescription = input("New Description: ")
+      cur.execute("UPDATE experience SET title=?, employer=?, dateStarted=?, dateEnded=?, location=?, description=? WHERE title=?", (expTitle, expEmployer, expDateStarted, expDateEnded, expLocation, expDescription, expNum,))
+      db.commit()
+      print("Experience updated")
+      flag = 1
+      mainMenu(curUser, userList, friendDic)
+    else:
+      print("Experience title not found")
+
+  
+  experienceCount = cur.execute("SELECT username FROM experience WHERE username=?", (curUser.username,))
+  expCount = (len(experienceCount.fetchall()))
+  
+  if expCount == 3 and flag == 0:
+    print("Maximum number of experiences reached\n")
+    mainMenu(curUser, userList, friendDic)
+  else:
+    expTitle = input("Experience 1\nTitle: ")
+    expEmployer = input("Employer: ")
+    expDateStarted = input("Date started: ")
+    expDateEnded = input("Date ended: ")
+    expLocation = input("Location: ")
+    expDescription = input("Description: ")
+  
+    
+    cur.execute("INSERT INTO experience (username, title, employer, dateStarted, dateEnded, location, description) VALUES (?, ?, ?, ?, ?, ?, ?)", (curUser.username, expTitle, expEmployer, expDateStarted, expDateEnded, expLocation, expDescription))
+    db.commit()
+    mainMenu(curUser, userList, friendDic)
+
+def education(curUser, userList, friendDic):
+  db = sqlite3.connect("education.db")
+  cur = db.cursor()  
+  cur.execute("CREATE TABLE IF NOT EXISTS education('username' TEXT NOT NULL, 'schoolName' TEXT, 'degree' TEXT, 'yearsAttended' TEXT)")
+
+  nameCheck = cur.execute("SELECT username FROM education WHERE username=?", (curUser.username,))
+
+  if nameCheck:
+    print("Education section already found.")
+  else:
+    schoolName = input("School name: ")
+    degree = input("Degree: ")
+    yearsAttended = input("Years attended: ")
+    
+    cur.execute("INSERT INTO education (username, schoolName, degree, yearsAttended) VALUES (?, ?, ?, ?)", (curUser.username, schoolName, degree, yearsAttended))
+    db.commit()
+    print("Education added!\n")
+    mainMenu(curUser, userList, friendDic)
+
+  # return "education"
+  
+  
