@@ -1,5 +1,4 @@
 import re, ast
-from collections import defaultdict
 
 global currentUser
 

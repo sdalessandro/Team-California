@@ -1,5 +1,7 @@
 import User, ast
 import sqlite3
+import datetime
+
 # ---------------------------------------------------------------------------------- #
 # additional options on whether the user is searching for a job, learning a skill, or communicating with others 
 
@@ -34,7 +36,7 @@ Enter 'f' to view them or enter an option 1-9: ")
         option = input(baseMenu + "Please select an option 1-9: ")
     
     if option == '1':
-        jobListings()
+        jobListings(curUser, userList, friendDic)
     elif option == '2':
         learnSkill()
     elif option == '3':
@@ -58,41 +60,246 @@ Enter 'f' to view them or enter an option 1-9: ")
         print("Invalid input. Please select an option 1-9\n")
         mainMenu(userList)
     
-def jobListings():
+def jobListings(curUser, userList, friendDic):
+    db = sqlite3.connect("jobListings.db")
+    cur = db.cursor()  
+    cur.execute("CREATE TABLE IF NOT EXISTS jobListings('poster' TEXT NOT NULL, 'title' TEXT, 'description' TEXT, 'employer' TEXT, 'location' TEXT, 'salary' TEXT)")
+    print("Current user: ", curUser.username)
+    sm1_query3 = sqlite3.connect("jobListings.db")
+    curz = sm1_query3.cursor()
+    curz.execute("CREATE TABLE IF NOT EXISTS savedJobs('user' TEXT NOT NULL, 'title' TEXT)")
+  #prnt = cur.execute("SELECT * FROM jobApplications")
+    d1 = sqlite3.connect("jobApplications.db")
+    cur1 = d1.cursor()
+    prnt = cur1.execute("SELECT * FROM jobApplications WHERE user=?",(curUser.username,))
+        
+    x = prnt.fetchall()
+    d2 = sqlite3.connect("jobListings.db")
+    cur2 = d2.cursor()
+
+    for i in x:
+      cur2.execute("SELECT * FROM jobListings WHERE poster = ? AND title = ?", (i[1], i[2]))
+      ex1 = cur2.fetchall()
+      if ex1:
+        pass
+        #print("This job " + i[2] + "has not been deleted") 
+      else:
+        print("The job you applied for: " + "(" + i[2] + ")" + " has been deleted*") 
 
     options = input("What are you looking to do?\n\
-        \t1. Browse listings\n\
-        \t2. Post a job\n\
-        \tPlease select 1 or 2:\n")
+      1. Generate lists\n\
+      2. Post a job\n\
+      3. Apply to a job\n\
+      4. Delete a job you posted\n\
+Please select one of the options above:\n")
 
-    if int(options) == 1:
-        file = open("jobListings.txt", mode = 'r')
-        for line in file:
-            print(line.strip())
-    elif int(options) == 2:
-        file = open("jobListings.txt", mode = 'r')
-        countLines = file.readlines()
-        print(len(countLines))
-        file.close()
+    while options != "1" and options != "2" and options != "3" and options != "4":
+      options = input("Invalid input")
     
-        if len(countLines) <= 30:
-            name = input("Enter your name: ")
+    if options == "1":
+        sub_menu_1 = input("What are you looking to do?\n\
+        1. Browse all job listings\n\
+        2. Browse jobs that you applied for\n\
+        3. Browse jobs that you have not applied for\n\
+        4. Browse jobs that you have saved\n")
+
+        while sub_menu_1 != "1" and sub_menu_1 != "2" and sub_menu_1 != "3" and sub_menu_1 != "4":
+          sub_menu_1 = input("Invalid input")
+
+        if sub_menu_1 == "1":
+        # file = open("jobListings.txt", mode = 'r')
+        # for line in file:
+        #     print(line.strip())
+          
+          prnt = cur.execute("SELECT * FROM jobListings") #should this not be cur?
+          x = prnt.fetchall()
+      
+          for i in x:
+            print()
+            print("Poster: " + i[0]) #poster
+            print("Title: " + i[1]) #title
+            print("Description: " + i[2]) #description
+            print("Employer: " + i[3]) #employer
+            print("Location: " + i[4]) #location
+            print("Salary: " + i[5]) #salary
+      
+            d = sqlite3.connect("jobApplications.db")
+            curd = d.cursor() 
+            curd.execute("SELECT * FROM jobApplications WHERE user = ? AND poster = ? AND title = ?",(curUser.username, i[0], i[1],))
+            exe = curd.fetchall()
+            if exe:
+              print("You have applied for this job!")
+
+            
+          saved_job = input("If you would like to save a job enter its title, otherwise press 'q' to quit:")
+          if(saved_job == 'q'):
+            exit(-1)
+          sm1_query4 = sqlite3.connect("jobListings.db")
+          sm1_cur4 = sm1_query4.cursor()
+          sm1_cur4.execute("SELECT * FROM jobListings")
+          exe4 = sm1_cur4.fetchall()
+          if exe4:
+            sm1_query4.execute("INSERT INTO savedJobs(user,title) VALUES(?,?)", (curUser.username, saved_job))
+            sm1_query4.commit()
+          else:
+            print("job name not listed")
+            exit(-1)
+          print("\n")
+        elif sub_menu_1 == "2":
+          prnt2 = cur.execute("SELECT * FROM jobListings")
+          c = prnt2.fetchall()
+
+          for i in c:
+            sm1_query = sqlite3.connect("jobApplications.db")
+            sm1_cur = sm1_query.cursor()
+            sm1_cur.execute("SELECT * FROM jobApplications WHERE user = ? AND poster = ? AND title = ?", (curUser.username, i[0], i[1]))
+            ex2 = sm1_cur.fetchall()
+            if ex2:
+              print()
+              print("Poster: " + i[0]) #poster
+              print("Title: " + i[1]) #title
+              print("Description: " + i[2]) #description
+              print("Employer: " + i[3]) #employer
+              print("Location: " + i[4]) #location
+              print("Salary: " + i[5]) #salary
+              print()
+        
+        elif sub_menu_1 == "3":
+          prnt3 = cur.execute("SELECT * FROM jobListings")
+          c1 = prnt3.fetchall()
+
+          for i in c1:
+            sm1_query2 = sqlite3.connect("jobApplications.db")
+            sm1_cur2 = sm1_query2.cursor()
+            sm1_cur2.execute("SELECT * FROM jobApplications WHERE user = ? AND poster = ? AND title = ?", (curUser.username, i[0], i[1]))
+            ex3 = sm1_cur2.fetchall()
+            if not ex3: #if not something youve already applied for
+              print()
+              print("Poster: " + i[0]) #poster
+              print("Title: " + i[1]) #title
+              print("Description: " + i[2]) #description
+              print("Employer: " + i[3]) #employer
+              print("Location: " + i[4]) #location
+              print("Salary: " + i[5]) #salary
+              print()
+        elif sub_menu_1 == "4":
+          sm1_query5 = sqlite3.connect("jobListings.db")
+          sm1_cur5 = sm1_query5.cursor()
+          prnt4 = sm1_cur5.execute("SELECT * FROM savedJobs")
+          #for row in prnt4.fetchall():
+            #print(row)
+          
+          for i in prnt4:
+            print("Job: " + i[1])
+            print()
+
+          save_or_nah = input("If you would like to unsave any of these jobs enter 'u', otherwise enter 'q' to quit: ")
+          if(save_or_nah == 'u'):
+            donzo = input("Which job would you like to delete?:")
+            sm1_query6 = sqlite3.connect("jobListings.db")
+            sm1_cur6 = sm1_query6.cursor()
+            query_delete_2= sm1_cur6.execute("DELETE FROM savedJobs WHERE title = ?", (donzo,))
+            sm1_query6.commit()
+            print("You have deleted " + donzo + " from the saved jobs list\n")
+          elif(save_or_nah == 'q'):
+            exit(-2)
+        mainMenu(curUser, userList, friendDic)
+          
+    elif options == "2":
+        prnt = cur.execute("SELECT * FROM jobListings")
+        x = prnt.fetchall()
+      
+        if len(x) <= 10:
+            # name = input("Enter your name: ")
             title = input("Enter a title for the job: ")
             description = input("Enter description: ")
             employer = input("Enter name of employer: ")
             location = input("Enter location: ")
             salary = input("Enter salary: ")
 
-            file = open("jobListings.txt", mode = 'a')
-            file.write("\n" + name + "\n")
-            file.write(title + "\n")
-            file.write(description + "\n")
-            file.write(employer + "\n")
-            file.write(location + "\n")
-            file.write(salary + "\n")
-            file.close()
+            cur.execute("INSERT INTO jobListings(poster, title, description, employer, location, salary) VALUES (?, ?, ?, ?, ?, ?)", (curUser.username, title, description, employer, location, salary))
+            db.commit()
         else: 
-            print("Reached max capacity of five job postings")
+            print("Reached max capacity of ten job postings")
+    elif options == "3":    
+ 
+      poster = input("Input poster: ")
+      title = input("Input title: ")
+      
+      if poster == curUser.username:
+        print("You cannot apply to a job you posted!")
+        mainMenu(curUser, userList, friendDic)
+      else:
+        exe = cur.execute("SELECT * FROM jobListings WHERE poster=? AND title=?", (poster, title,))
+        tmp = exe.fetchall() # check if specific jobposting exists
+        if tmp: #if it does exist...
+
+          d = sqlite3.connect("jobApplications.db")
+          curd = d.cursor()  
+          curd.execute("CREATE TABLE IF NOT EXISTS jobApplications('user' TEXT NOT NULL, 'poster' TEXT, 'title' TEXT, 'graduationDate' TEXT, 'startDate' TEXT, 'goodFit' TEXT)")
+
+          tempexe = curd.execute("SELECT * FROM jobApplications WHERE user=? AND poster=? AND title=?", (curUser.username, poster, title,))
+          x = tempexe.fetchall()
+          if x: #check if user has already applied to the job 
+            print("You have already applied to this job!\n")
+            mainMenu(curUser, userList, friendDic)
+          else:    
+            graduationDate = input("When do you graduate (mm/dd/yyyy)? ")
+            startDate = input("When can you start working (mm/dd/yyyy)? ")
+            goodFit = input("Why do you think you would be a good fit for this job? ")
+          
+            curd.execute("INSERT INTO jobApplications(user, poster, title, graduationDate, startDate, goodFit) VALUES (?, ?, ?, ?, ?, ?)", (curUser.username, poster, title, graduationDate, startDate, goodFit))
+            #poster and title identify the jobListing that curUser is applying t
+            d.commit()
+            mainMenu(curUser, userList, friendDic)
+        else:
+          print("Job not found\n")
+          mainMenu(curUser, userList, friendDic)
+    elif options == "4":
+      #make another poster variable inside option 4
+      #print("Which job would you like to delete?: ")
+      #list jobs associated with that login
+      poster = input("Poster: ")
+      con = sqlite3.connect("jobListings.db")
+      cur = con.cursor()
+      #tempexe = cur.execute("SELECT * FROM jobApplications WHERE poster=? ", (curUser.username,)) 
+      query = cur.execute("SELECT * FROM jobListings WHERE poster = ? ", (poster,)) #currUser.username
+      #x = tempexe.fetchall() #
+      #print(x)
+      i = 1
+      for row in query.fetchall():
+        print(i, " : ", row)
+        i = i + 1
+
+      job_to_delete = input("Which job would you like to delete? ")
+      #make sure to include option to back out
+      #input validation (must be a valid job name) 
+      #(job can only be deleted by poster)
+      #should it be con.execute or cur.execute?
+      query_delete = cur.execute("DELETE FROM jobListings WHERE title = ?", (job_to_delete,))
+            
+      query_post_deletion = cur.execute("SELECT * FROM jobListings WHERE poster = ?", (poster,))
+      i = 1
+      for row in query_post_deletion.fetchall():
+        print(i, " : ", row)
+        i = i + 1
+
+      con.commit()
+      
+      #job_to_delete = input("")
+      
+      #ask enduser which one
+      #user picks one
+      #find the notifications related to that job
+      #delete them all
+      #delete the actual job record
+      
+      #dont forget to commit when necessary (when to commit
+      #table has same name as db..
+      
+      
+      #cur = 
+      
     else:
         options = input("Invalid input. Please select 1 or 2\n")
         jobListings()
@@ -137,7 +344,8 @@ def skill_5():
     print("Under construction...")
     
 def skill_6():
-    mainMenu(userList)
+    print("Under construction...")
+    #mainMenu(curUser, userList, friendDic)
     
 def importantLinksUser():
     choice = input("Select an option:\n\
@@ -495,7 +703,7 @@ def createProfile(curUser,userList,friendDic):
   
     #for choice in userList 
 
-def viewProfile(curUser,userList,friendDic, username):
+def viewProfile(curUser, userList, friendDic, username):
     db = sqlite3.connect("profile.db")
     cur = db.cursor()  
 
