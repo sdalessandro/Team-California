@@ -703,7 +703,7 @@ def createProfile(curUser,userList,friendDic):
   
     #for choice in userList 
 
-def viewProfile(curUser,userList,friendDic, username):
+def viewProfile(curUser, userList, friendDic, username):
     db = sqlite3.connect("profile.db")
     cur = db.cursor()  
 
