@@ -1,4 +1,4 @@
-Ismarieu1! Ismariep1! Ismarie Birriel
-sdmetrik Hunter3! Sandro Dalessandro
-Geonheeu1! Geonheep1! Geonhee Choi
-Booth69! Password69! Evan Boothby
+Ismarieu1! Ismariep1! Ismarie Birriel True
+sdmetrik Hunter3! Sandro Dalessandro False
+Geonheeu1! Geonheep1! Geonhee Choi False
+Booth69! Password69! Evan Boothby True

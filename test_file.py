@@ -77,8 +77,6 @@ def test_careers():
 def test_developers():
     assert loginMenu.generalLinks(userList, friendDic) == "developers"
 
-
-# ---- new test cases for epic 5 ---------- #
 def test_showMyNetwork():
     assert userMenu.showMyNetwork(curUser, userList, friendDic, curFriendLog) == "showNetwork"
 
@@ -90,6 +88,9 @@ def test_createProfile():
 
 def test_education():
     assert userMenu.educaton(curUser, userList, friendDic) == "education"
+
+def test_communicateOthers():
+    assert userMenu.communicateOthers(curUser, userList, friendDic) == "communicateOthers"
 
 
 '''

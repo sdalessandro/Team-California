@@ -15,8 +15,10 @@ def mainMenu(curUser, userList, friendDic):
     6. Important Links\n\
     7. Create Profile\n\
     8. View Profile\n\
-    9. Logout\n"
-  
+    9. Manage Subscription\n\
+    10. Logout\n"
+
+    # check for new friend request
     pendingFriendList = []
     for user, userFriends in friendDic.items():
         if curUser.username != user:
@@ -27,13 +29,25 @@ def mainMenu(curUser, userList, friendDic):
         for friend, status in curFriendLog.items():
             if status == "pending":
                 pendingFriendList.append(friend)
-
-    if pendingFriendList:
+  
+    #name FROM sqlite_master WHERE type='table' AND name=?
+    # check for new messages for user to send to check if any
+    message_db = sqlite3.connect("messages.db")
+    cur = message_db.cursor()
+    exist2 = cur.execute("SELECT receiver FROM "+curUser.firstName+" WHERE receiver=? AND read=?", (curUser.username, "no"))
+    exist = exist2.fetchall()
+  
+    if exist and pendingFriendList:
+      option = input(baseMenu + "\n You have new messages and new pending friend requests!\n\ Enter 'i' to view messages, 'f' to view friend requests, or enter an option 1-10: ")
+    elif exist:
+      option = input(baseMenu + "\n You have new messages!\n\
+      Enter 'i' to view them or enter an option 1-10: ")     
+    elif pendingFriendList:
         option = input(baseMenu + 
             "\nYou have new pending friend request!\n\
-Enter 'f' to view them or enter an option 1-9: ")
-    else: 
-        option = input(baseMenu + "Please select an option 1-9: ")
+Enter 'f' to view them or enter an option 1-10: ")
+    else:
+        option = input(baseMenu + "Please select an option 1-10: ")
     
     if option == '1':
         jobListings(curUser, userList, friendDic)
@@ -44,18 +58,22 @@ Enter 'f' to view them or enter an option 1-9: ")
     elif option == '4':
         showMyNetwork(curUser, userList, friendDic, curFriendLog)
     elif option == '5':
-        communicateOthers()
+        communicateOthers(curUser, userList, friendDic)
     elif option == '6':
-        importantLinksUser()
+        importantLinksUser(curUser, userList, friendDic)
     elif option == "7":
         createProfile(curUser, userList, friendDic)
     elif option == "8":
         name = curUser.username
         viewProfile(curUser, userList, friendDic, name)
-    elif option == '9':
+    elif option == "9":
+        manageSub(curUser, userList, friendDic)
+    elif option == '10':
         exit(0)
     elif option == 'f':
         listFriendReqs(curUser, userList, friendDic, pendingFriendList)
+    elif option == "i":
+        viewMessages(curUser, userList, friendDic)
     else:
         print("Invalid input. Please select an option 1-9\n")
         mainMenu(userList)
@@ -347,7 +365,7 @@ def skill_6():
     print("Under construction...")
     #mainMenu(curUser, userList, friendDic)
     
-def importantLinksUser():
+def importantLinksUser(curUser, userList, friendDic):
     choice = input("Select an option:\n\
     1. Copyright Notice\n\
     2. About\n\
@@ -384,6 +402,7 @@ def importantLinksUser():
             print("Error: Invalid input\n\
                     Please enter a number 1-8.")
             importantLinksUser()
+    mainMenu(curUser, userList, friendDic)
 
 def studentSearch(curUser, userList, friendDic):
     resultList = []
@@ -474,9 +493,230 @@ def showMyNetwork(curUser, userList, friendDic, curFriendLog):
     # return "showNetwork"
     return
 
-def communicateOthers():
-    print("Under construction...") 
+# function used to communicate with friends (standard) or everyone (plus)
+def communicateOthers(curUser, userList, friendDic):
+  # table created for curUser to send/receive messages
+  #return "communicateOthers"
+  message_db = sqlite3.connect("messages.db")
+  cur = message_db.cursor()
 
+  subscription = curUser.plusMember.strip()
+
+  option = input("Select an option:\n\
+  1. Generate List of Friends\n\
+  2. Message Friends\n\
+  3. Message Everyone\n\
+  4. View Inbox\n\
+  \n\
+  0. Go back\n")
+  
+  if int(option) == 0:
+    mainMenu(curUser, userList, friendDic)
+  elif int(option) == 1:
+    # generate list of friends - DONE
+    for user, userFriends in friendDic.items():
+        if curUser.username != user:
+            continue
+        curFriendLog = ast.literal_eval(userFriends)
+    print("Friends: ")
+    for user, status in curFriendLog.items():
+      print(user)
+    communicateOthers(curUser, userList, friendDic)
+  elif int(option) == 2:
+    # message friends ( available to standard and plus) -- DONE
+    for user, userFriends in friendDic.items():
+      if user == curUser.username:
+        if len(userFriends) > 2:
+          print("Send a message to a friend!")
+        else:
+          print("You have no friends!")
+          mainMenu(curUser, userList, friendDic)
+    
+    choice = input("Who would you like to send a message to:\n")
+    flag = 0
+    for user, userFriends in friendDic.items():
+      if user == choice:
+        flag = 1
+        for User1 in userList:
+          if user == User1.username:
+            username1 = User1.firstName
+        message = input("What message would you like to send: ")
+        # now to add messages to database to table of receiver (title = user's firstName)
+        query = "CREATE TABLE IF NOT EXISTS " + username1 + " ('receiver' TEXT NOT NULL, 'sender' TEXT, 'message' TEXT, 'read' TEXT)"
+        cur.execute(query)
+        cur.execute("INSERT INTO " + username1 + "(receiver, sender, message, read) VALUES (?, ?, ?, ?)", (user, curUser.username, message, "no"))
+        message_db.commit()
+        print("Message sent!")
+    if flag == 0:
+       print("I'm sorry, you are not friends with this person. ")
+
+  elif int(option) == 3:
+    # message others (available only to plus) -- DONE
+    if subscription == "False":
+      print("Only Plus users are allowed to communicate with those outside of their friend list, upgrade today!")
+      communicateOthers(curUser, userList, friendDic)
+    f = open('userList.txt', 'r')
+    # continue for messaging every user
+    #display all users in the system
+    p_flag = False
+    with open('userList.txt', 'r') as f:
+      for line in f:
+        words = line.split()
+        if words:
+          if not p_flag:
+            print()
+            print("User List:\n")
+            p_flag = True
+          print(words[0])
+          print()
+    choice = input("Who would you like to send a message to:\n")
+    flag = 0
+    for user in userList:
+      if user.username == choice:
+        flag = 1
+        message = input("What message would you like to send:\n")
+        # table created with title of receiver's firstName
+        query = "CREATE TABLE IF NOT EXISTS " + user.firstName + " ('receiver' TEXT NOT NULL, 'sender' TEXT, 'message' TEXT, 'read' TEXT)"
+        cur.execute(query)
+        cur.execute("INSERT INTO " + user.firstName + "(receiver, sender, message, read) VALUES (?, ?, ?, ?)", (user.username, curUser.username,  message, "no"))
+        message_db.commit()
+        print("Message sent!")
+    if flag == 0:
+      print("This user is not in our system!")
+      communicateOthers(curUser, userList, friendDic)
+
+  elif int(option) == 4:
+    # view inbox -> parsing messages db
+    exist2 = cur.execute("SELECT receiver FROM "+curUser.firstName+" WHERE receiver=? AND read=?", (curUser.username, "no"))
+    exist = exist2.fetchall()
+    
+    if exist:
+      print("Messages found!")
+      received = cur.execute("SELECT * FROM "+curUser.firstName+" WHERE receiver=? AND read=?", (curUser.username, "no"))
+      messageList = received.fetchall()
+
+      print("Unread messages: ")
+      for num, exp in enumerate(messageList):
+        print(f"Message {num + 1}")
+        print("Sender: " + exp[1])
+        print("Message: " + exp[2] + "\n")
+
+      read_messages = cur.execute("SELECT * FROM "+curUser.firstName+" WHERE receiver=? AND read=?", (curUser.username, "yes"))
+      read = read_messages.fetchall()
+
+      print("Read messages: ")
+      for num, exp in enumerate(read):
+        print(f"Message {num + 1}")
+        print("Sender: " + exp[1])
+        print("Message: " + exp[2] + "\n")
+        
+      choice = input("Would you like to mark any as read (y or n): ")
+      while choice != "y" and choice != "n":
+        choice = input("Enter a valid value (y or n): ")
+
+      if choice == 'y':
+        message_read = input("Enter username of messages you would like to mark as read: ")
+        flag = 0
+        for user in userList:
+          if user.username != message_read:
+            continue
+          elif user.username == message_read: #changed to add conditional...
+            flag = 1
+            cur.execute("UPDATE "+curUser.firstName+" SET read=?", ("yes",))
+            message_db.commit()
+            print("Messages are now marked as read")
+        if flag == 0:
+          print("There are no messages associated with that username")
+      
+      delete_choice = input("Would you like to delete any message (y or n)? ")
+      while delete_choice != "y" and delete_choice != "n":
+        delete_choice = input("Enter a valid value (y or n): ")
+
+      if delete_choice == "y":
+        message_delete = input("Enter username of messages you would like to delete: ")
+        for user in userList:
+          if user.username == message_delete:
+            cur.execute("DELETE FROM "+curUser.firstName+" WHERE sender=?", (user.username,))
+            message_db.commit()
+            print("Messages are now deleted.")
+
+      respond_choice = input("Would you like to respond to a message (y or n)?")
+      while respond_choice != "y" and respond_choice != "n":
+        respond_choice = input("Enter a valid value (y or n): ")
+
+      if respond_choice == "y":
+        response_message = input("Which user would you like to respond to: ")
+        flag = 0
+        for user in userList:
+          if user.username == response_message:
+            flag = 1
+            message = input("What message would you like to send:\n")
+            # table created with title of receiver's firstName
+            query = "CREATE TABLE IF NOT EXISTS " + user.firstName + " ('receiver' TEXT NOT NULL, 'sender' TEXT, 'message' TEXT, 'read' TEXT)"
+            cur.execute(query)
+            cur.execute("INSERT INTO " + user.firstName + "(receiver, sender, message, read) VALUES (?, ?, ?, ?)", (user.username, curUser.username,  message, "no"))
+            message_db.commit()
+            print("Message sent!")            
+    else:
+      print("No messages")
+  else:
+    print("Enter a valid input value between 0-4\n")
+    communicateOthers(curUser, userList, friendDic)
+  communicateOthers(curUser, userList, friendDic)
+
+
+# function allows you to view messages from friends
+def viewMessages(curUser, userList, friendDic):
+    message_db = sqlite3.connect("messages.db")
+    cur = message_db.cursor()
+    exist2 = cur.execute("SELECT receiver FROM "+curUser.firstName+" WHERE receiver=? AND read=?", (curUser.username, "no"))
+    exist = exist2.fetchall()
+    
+    if exist:
+      print("Messages found!")
+      print()
+      received = cur.execute("SELECT * FROM "+curUser.firstName+" WHERE receiver=? AND read=?", (curUser.username, "no"))
+      messageList = received.fetchall()
+
+      for num, exp in enumerate(messageList):
+        print("Sender: " + exp[1])
+        print("Message: " + exp[2] + "\n")
+        with open('userList.txt', 'r') as f2:
+          for line in f2:
+            u_names = line.split()
+            if u_names:
+              if(u_names[0] == exp[1] and u_names[4] == "True"):
+                print("(The user" + " " + "(" + u_names[0] + ")" + " " + "is a plus member)" + 
+                     "\n")
+          
+      #choice = input("Would you like to mark as read or delete any message (y or n)? ")
+      choice = input("Would you like to respond to a message (y or n)?")
+      while choice != "y" and choice != "n":
+        choice = input("Enter a valid value (y or n): ")
+  
+      if choice == "y":
+        respond_user = input("Which user would you like to respond to: ")
+        flag2 = 0
+        for user in userList:
+          if user.username == respond_user:
+            flag2 = 1
+            message = input("What message would you like to send:\n")
+            # table created with title of receiver's firstName
+            query = "CREATE TABLE IF NOT EXISTS " + user.firstName + " ('receiver' TEXT NOT NULL, 'sender' TEXT, 'message' TEXT, 'read' TEXT)"
+            cur.execute(query)
+            cur.execute("INSERT INTO " + user.firstName + "(receiver, sender, message, read) VALUES (?, ?, ?, ?)", (user.username, curUser.username,  message, "no"))
+            message_db.commit()
+            print("Message sent!")  
+    else:
+      print("No messages")
+    while choice != "y" and choice != "n":
+      choice = input("Enter a valid value (y or n): ")
+
+    if choice == "y":
+      communicateOthers(curUser, userList, friendDic)
+    else:
+      mainMenu(curUser, userList, friendDic)
+      
 def guestControls():
     option = input("Select an option:\n\
             1. Guest Controls\n\
@@ -825,4 +1065,63 @@ def education(curUser, userList, friendDic):
     mainMenu(curUser, userList, friendDic)
 
   # return "education"
+  
+# --- function for managing Standard or Plus subscription ---- #
+def manageSub(curUser, userList, friendDic):
+  print("Current subscription: ")
+  subscription = curUser.plusMember.strip()
+  
+  # open file to copy data and replace curUser line with True/False if they choose to change subscription
+  fin = open("userList.txt", 'r')
+  data = fin.readlines()
+  newString = ''
+  
+  if subscription == "False":
+    print("Standard")
+    print("Upgrade to Plus to send messages to everyone!")
+    choice = input("Would you like to change your subscription (y or n)? ")
+    if choice == "y":
+      subscription = "True"
+      print("You are now a Plus member! This change will be reflected the next time you login. A charge of $10 will be added to your account each month.")
+      for userLine in data:
+        if curUser.username in userLine:
+          userLine = userLine.replace("False\n", "True\n")
+        newString += userLine
+    elif choice == "n":
+      subscription = "False"
+      for userLine in data:
+        newString += userLine
+    else:
+      print("Invalid input")
+      manageSub(curUser, userList, friendDic)
+     
+  elif subscription == "True":
+    print("Plus")
+    choice = input("Would you like to change your subscription (y or n)? ")
+    if choice == "y":
+      subscription = "False"
+      print("You are no longer a Plus member! This change will be reflected next time you login. You will no longer be charged after this months billing cycle is complete.")
+      for userLine in data:
+        if curUser.username in userLine:
+          userLine = userLine.replace("True\n", "False\n")
+        newString += userLine
+    elif choice == "n":
+      subscription = "True"
+      for userLine in data:
+        newString += userLine
+    else:
+      print("Invalid input")
+      manageSub(curUser, userList, friendDic)
+
+  fin.close()
+ 
+  # write data with replaced string back into userList
+  fin = open("userList.txt", 'w')
+  fin.write(newString)
+  fin.close()
+  
+  # update userList to grab new True/False
+  userList = User.loadUsers("userList.txt")
+  
+  mainMenu(curUser, userList, friendDic)
   
