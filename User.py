@@ -4,13 +4,14 @@ global currentUser
 
 class User(object):
 
-    def __init__(self, username, password, firstName, lastName):
+    def __init__(self, username, password, firstName, lastName, plusMember):
         super(User, self).__init__()
         self.username = username
         self.password = password
         self.firstName = firstName
         self.lastName = lastName
         self.loggedIn = False
+        self.plusMember = plusMember
 
     # Takes in the entire friend log and checks which are "accepted"
     def getFriends(self, friendLog):
@@ -83,10 +84,11 @@ def createUser(userList):
     password = setPassword()
     firstName = setFirstName()
     lastName = setLastName()
+    plusMember = setSubscription()
 
     # Write new user to userList.txt
     file = open("userList.txt", 'a')
-    file.write("{0} {1} {2} {3}\n".format(username, password, firstName, lastName))
+    file.write("{0} {1} {2} {3} {4}\n".format(username, password, firstName, lastName, plusMember))
     file.close()
 
     #Write new user to userFriends.txt
@@ -144,3 +146,14 @@ def setLastName():
         setLastName()
 
     return lastName
+
+def setSubscription():
+    choice = input("Would you like to subscribe to Plus membership for $10 a month (y or n): ")
+
+    if choice == "y":
+      return True
+    elif choice == "n":
+      return False
+    else:
+      print("Invalid choice, pick y or n")
+      setSubscription()
