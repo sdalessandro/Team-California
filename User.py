@@ -95,6 +95,11 @@ def createUser(userList):
     file = open("userFriends.txt", 'a')
     file.write(username + " {}\n")
     file.close()
+
+    # write new user to newUsers.txt
+    file = open("newUsers.txt", 'a')
+    file.write(username + " {}\n")
+    file.close()
     
 def setUsername(userList):
     username = input("Enter your desired username: ")
