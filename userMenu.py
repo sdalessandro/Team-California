@@ -1,4 +1,4 @@
-import User, ast, re, sqlite3
+import User, ast, re, sqlite3, apis
 from datetime import datetime
 
 # ---------------------------------------------------------------------------------- #
@@ -253,6 +253,8 @@ Please select one of the options above:\n")
         sm1_query4.execute("INSERT INTO savedJobs(user,title) VALUES(?,?)",
                            (curUser.username, saved_job))
         sm1_query4.commit()
+        # Update output api
+        apis.outputSavedJobs()
       else:
         print("job name not listed")
         exit(-1)
@@ -320,26 +322,26 @@ Please select one of the options above:\n")
           "DELETE FROM savedJobs WHERE title = ?", (donzo, ))
         sm1_query6.commit()
         print("You have deleted " + donzo + " from the saved jobs list\n")
+        # Update output api
+        apis.outputSavedJobs()
       elif (save_or_nah == 'q'):
         exit(-2)
     mainMenu(curUser, userList, friendDic)
 
   elif options == "2":
-    prnt = cur.execute("SELECT * FROM jobListings")
-    x = prnt.fetchall()
 
     if len(x) <= 10:
       # name = input("Enter your name: ")
       title = input("Enter a title for the job: ")
-      description = input("Enter description: ")
+      desc = input("Enter description: ")
       employer = input("Enter name of employer: ")
-      location = input("Enter location: ")
+      loc = input("Enter location: ")
       salary = input("Enter salary: ")
+      poster = curUser.username
 
-      cur.execute(
-        "INSERT INTO jobListings(poster, title, description, employer, location, salary) VALUES (?, ?, ?, ?, ?, ?)",
-        (curUser.username, title, description, employer, location, salary))
-      db.commit()
+      createJobListing(title, desc, poster, employer, loc, salary)
+      apis.outputJobListings()
+
     else:
       print("Reached max capacity of ten job postings")
   elif options == "3":
@@ -389,6 +391,8 @@ Please select one of the options above:\n")
           #poster and title identify the jobListing that curUser is applying to
           d.commit()
 
+          # Update api output file
+          apis.outputAppliedJobs()
             
           # Update latest job app in checkJobsApps.txt
           with open("checkJobApps.txt", "r", encoding = "utf-8") as checkFile:
@@ -435,7 +439,7 @@ Please select one of the options above:\n")
       i = i + 1
 
     con.commit()
-
+    apis.outputJobListings()
     #job_to_delete = input("")
 
     #ask enduser which one
@@ -457,6 +461,17 @@ Please select one of the options above:\n")
 
 # -------------------------------------------------------------------------------------- #
 # Create list of 5 skills for learning a skill section with an additional "do not select a skill" option
+
+def createJobListing(title, desc, poster, employer, loc, salary):
+    db = sqlite3.connect("jobListings.db")
+    cur = db.cursor()
+    prnt = cur.execute("SELECT * FROM jobListings")
+    x = prnt.fetchall()
+    cur.execute(
+        "INSERT INTO jobListings(poster, title, description, employer, location, salary) VALUES (?, ?, ?, ?, ?, ?)",
+        (poster, title, desc, employer, loc, salary))
+    db.commit()
+
 def learnSkill():
   print("Learn a new skill")
   selectSkill = input(

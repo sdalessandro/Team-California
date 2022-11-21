@@ -1,0 +1,70 @@
+Username: sdmetrik
+Title: Sandro's profile
+Major: CS
+University: University of south florida
+Description: I am tall as fck
+Experience 1
+Title: professional cod player
+Employer: xbox
+Date started: 360
+Date ended: one
+Location: my basement
+Description: i play cod
+Experience 2
+Title: profesisonal cod player
+Employer: xbox
+Date started: 360
+Date ended: 111
+Location: my basement
+Description: i play cod
+Experience 3
+Title: professional cod player
+Employer: xbox
+Date started: 360
+Date ended: one
+Location: my basement
+Description: i play cod
+====
+Username: Ismarieu1!
+Title: My profile
+Major: computer engineering
+University: USF
+Description: I love cooking
+Experience 1
+Title: professor
+Employer: usf
+Date started: 3023
+Date ended: 234234
+Location: tmapa
+Description: teach noobs
+Experience 2
+Title: new cook 
+Employer: the new gordon ramisary
+Date started: 0.30.20
+Date ended: 03023.0303.202
+Location: georgia
+Description: i cook better food
+Experience 3
+Title: uber driver
+Employer: uber
+Date started: 01.102.02
+Date ended: 0302.03.023
+Location: Miami
+Description: i drive uber
+University of South Florida
+Computer Science
+2020 - 2024
+====
+Username: Booth69!
+Title: Guy
+Major: Dude
+University: USF
+Description: Just a bro being a dude guy
+Experience 1
+Title: GUy
+Employer: DUDE
+Date started: 10/21/89
+Date ended: 10/22
+Location: tampa
+Description: asah
+====

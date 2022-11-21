@@ -79,13 +79,7 @@ def saveFriends(friendDic):
             
     friendFile.close()
 
-def createUser(userList):
-    username = setUsername(userList)
-    password = setPassword()
-    firstName = setFirstName()
-    lastName = setLastName()
-    plusMember = setSubscription()
-
+def saveUser(username, password, firstName, lastName, plusMember):
     # Write new user to userList.txt
     file = open("userList.txt", 'a')
     file.write("{0} {1} {2} {3} {4}\n".format(username, password, firstName, lastName, plusMember))
@@ -100,6 +94,15 @@ def createUser(userList):
     file = open("newUsers.txt", 'a')
     file.write(username + " {}\n")
     file.close()
+
+def createUser(userList):
+    username = setUsername(userList)
+    password = setPassword()
+    firstName = setFirstName()
+    lastName = setLastName()
+    plusMember = setSubscription()
+
+    saveUser(username, password, firstName, lastName, plusMember)
     
 def setUsername(userList):
     username = input("Enter your desired username: ")
